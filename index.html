@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Plan Africa</title>
+<style>
+
+body{
+font-family:Arial;
+background:#f5f5f5;
+padding:40px;
+}
+
+.container{
+background:white;
+padding:30px;
+max-width:600px;
+margin:auto;
+border-radius:10px;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:10px;
+margin-bottom:20px;
+}
+
+button{
+background:#0f766e;
+color:white;
+padding:12px;
+border:none;
+width:100%;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Demande de plan 2D / 3D</h1>
+
+<form id="form">
+
+<label>Nom</label>
+<input id="name" required>
+
+<label>Email</label>
+<input id="email" required>
+
+<label>Pays</label>
+<select id="country">
+<option>Mali</option>
+<option>Sénégal</option>
+<option>Côte d'Ivoire</option>
+<option>Burkina Faso</option>
+<option>Mauritanie</option>
+</select>
+
+<label>Type de plan</label>
+<select id="type">
+<option>2D</option>
+<option>3D</option>
+<option>2D + 3D</option>
+</select>
+
+<label>Surface</label>
+<input id="surface">
+
+<label>Description</label>
+<textarea id="description"></textarea>
+
+<button type="submit">Envoyer la demande</button>
+
+</form>
+
+<p id="message"></p>
+
+</div>
+
+<script>
+
+document.getElementById("form").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+const data={
+name:document.getElementById("name").value,
+email:document.getElementById("email").value,
+country:document.getElementById("country").value,
+type:document.getElementById("type").value,
+surface:document.getElementById("surface").value,
+description:document.getElementById("description").value
+}
+
+let requests=JSON.parse(localStorage.getItem("requests")||"[]")
+
+requests.push(data)
+
+localStorage.setItem("requests",JSON.stringify(requests))
+
+document.getElementById("message").innerText="Demande enregistrée ✔"
+
+})
+
+</script>
+
+</body>
+</html>
