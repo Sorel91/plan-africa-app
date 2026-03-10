@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin - Requests</title>
+<style>
+body{font-family:Arial;padding:40px}
+table{border-collapse:collapse;width:100%}
+td,th{border:1px solid #ccc;padding:10px}
+</style>
+</head>
+
+<body>
+
+<h1>Demandes de plans</h1>
+
+<table id="table">
+<thead>
+<tr>
+<th>Nom</th>
+<th>Email</th>
+<th>Pays</th>
+<th>Type</th>
+<th>Surface</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<script>
+
+const SUPABASE_URL="https://btschxgghvblmohddqcj.supabase.co"
+const SUPABASE_KEY="TA_ANON_KEY"
+
+async function loadRequests(){
+
+const res=await fetch(`${SUPABASE_URL}/rest/v1/requests?select=*`,{
+headers:{
+apikey:SUPABASE_KEY,
+Authorization:`Bearer ${SUPABASE_KEY}`
+}
+})
+
+const data=await res.json()
+
+const tbody=document.querySelector("tbody")
+
+data.forEach(r=>{
+
+const tr=document.createElement("tr")
+
+tr.innerHTML=`
+<td>${r.full_name}</td>
+<td>${r.email}</td>
+<td>${r.country}</td>
+<td>${r.plan_type}</td>
+<td>${r.surface}</td>
+<td>${r.description}</td>
+`
+
+tbody.appendChild(tr)
+
+})
+
+}
+
+loadRequests()
+
+</script>
+
+</body>
+</html>
