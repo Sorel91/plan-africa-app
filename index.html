@@ -83,28 +83,39 @@ cursor:pointer;
 
 <script>
 
-document.getElementById("form").addEventListener("submit",function(e){
+<script>
+
+const SUPABASE_URL = "TON_URL_SUPABASE"
+const SUPABASE_KEY = "TA_ANON_KEY"
+
+document.getElementById("form").addEventListener("submit", async function(e){
 
 e.preventDefault()
 
-const data={
-name:document.getElementById("name").value,
-email:document.getElementById("email").value,
-country:document.getElementById("country").value,
-type:document.getElementById("type").value,
-surface:document.getElementById("surface").value,
-description:document.getElementById("description").value
+const data = {
+full_name: document.getElementById("name").value,
+email: document.getElementById("email").value,
+country: document.getElementById("country").value,
+plan_type: document.getElementById("type").value,
+surface: document.getElementById("surface").value,
+description: document.getElementById("description").value
 }
 
-let requests=JSON.parse(localStorage.getItem("requests")||"[]")
+await fetch(`${SUPABASE_URL}/rest/v1/requests`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"apikey": SUPABASE_KEY,
+"Authorization": `Bearer ${SUPABASE_KEY}`
+},
+body: JSON.stringify(data)
+})
 
-requests.push(data)
-
-localStorage.setItem("requests",JSON.stringify(requests))
-
-document.getElementById("message").innerText="Demande enregistrée ✔"
+document.getElementById("message").innerText="Demande envoyée ✔"
 
 })
+
+</script>
 
 </script>
 
