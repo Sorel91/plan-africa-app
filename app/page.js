@@ -1,8 +1,9 @@
 export default function Home() {
   return (
-    <main style={{ padding: "40px", fontFamily: "Arial" }}>
+    <main>
       <h1>Plan Africa</h1>
-      <p>Demandez votre plan 2D ou 3D.</p>
+      <p>Next.js app running</p>
     </main>
-  );
+  )
 }
+
