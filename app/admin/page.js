@@ -37,6 +37,21 @@ export default function AdminPage() {
   return (
     <main style={{ padding: "40px", fontFamily: "Arial" }}>
       <h1>Admin - Demandes</h1>
+  <button
+  onClick={async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  }}
+  style={{
+    marginBottom: "20px",
+    padding: "10px",
+    background: "#dc2626",
+    color: "white",
+    border: "none",
+  }}
+>
+  Se déconnecter
+</button>
       <p>{message}</p>
 
       <table style={{ borderCollapse: "collapse", width: "100%" }}>
