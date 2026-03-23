@@ -74,8 +74,8 @@ export default function AdminPage() {
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.country}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.plan_type}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.surface}</td>
-               <td style={{ border: "1px solid #ccc", padding: "10px" }}> {r.payment_status === "paid" ? "✅ payé" : "❌ en attente"}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+              <td style={{ border: "1px solid #ccc", padding: "10px" }}> {r.payment_status === "paid" ? "✅ payé" : "❌ en attente"}</td>
   <select
     value={r.status}
     onChange={async (e) => {
