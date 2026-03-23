@@ -12,27 +12,34 @@ export default function Home() {
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
   const [showOffers, setShowOffers] = useState(false);
+  const [requestId, setRequestId] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const { error } = await supabase.from("requests").insert([
-      {
-        full_name: fullName,
-        email,
-        country,
-        plan_type: planType,
-        surface,
-        description,
-        status: "submitted",
-      },
-    ]);
+const { data, error } = await supabase
+  .from("requests")
+  .insert([
+    {
+      full_name: fullName,
+      email,
+      country,
+      plan_type: planType,
+      surface,
+      description,
+      status: "submitted",
+      payment_status: "pending",
+    },
+  ])
+  .select()
+  .single();
 
     if (error) {
       setMessage("Erreur : " + error.message);
       return;
     }
-await fetch("/api/send-email", {
+setRequestId(data.id);
+  await fetch("/api/send-email", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -163,7 +170,7 @@ await fetch("/api/send-email", {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ formula: "basic" }),
+     body: JSON.stringify({ formula: "basic", requestId }),
     });
 
     const data = await res.json();
@@ -183,7 +190,7 @@ await fetch("/api/send-email", {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ formula: "standard" }),
+     body: JSON.stringify({ formula: "standard", requestId }),
     });
 
     const data = await res.json();
@@ -204,7 +211,7 @@ await fetch("/api/send-email", {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ formula: "premium" }),
+     body: JSON.stringify({ formula: "premium", requestId }),
     });
 
     const data = await res.json();
