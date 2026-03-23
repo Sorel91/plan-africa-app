@@ -67,41 +67,45 @@ export default function AdminPage() {
           </tr>
         </thead>
         <tbody>
-          {requests.map((r) => (
-            <tr key={r.id}>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.full_name}</td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.email}</td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.country}</td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.plan_type}</td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.surface}</td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.status}</td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}> {r.payment_status === "paid" ? "✅ payé" : "❌ en attente"}</td>
-  <select
-    value={r.status}
-    onChange={async (e) => {
-      const newStatus = e.target.value;
+  {requests.map((r) => (
+    <tr key={r.id}>
+      <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.full_name}</td>
+      <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.email}</td>
+      <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.country}</td>
+      <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.plan_type}</td>
+      <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.surface}</td>
 
-      await supabase
-        .from("requests")
-        .update({ status: newStatus })
-        .eq("id", r.id);
+      <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+        <select
+          value={r.status}
+          onChange={async (e) => {
+            const newStatus = e.target.value;
 
-      setRequests((prev) =>
-        prev.map((req) =>
-          req.id === r.id ? { ...req, status: newStatus } : req
-        )
-      );
-    }}
-  >
-    <option value="submitted">submitted</option>
-    <option value="in_review">in review</option>
-    <option value="in_progress">in progress</option>
-    <option value="completed">completed</option>
-  </select>
-</td>
-            </tr>
-          ))}
-        </tbody>
+            await supabase
+              .from("requests")
+              .update({ status: newStatus })
+              .eq("id", r.id);
+
+            setRequests((prev) =>
+              prev.map((req) =>
+                req.id === r.id ? { ...req, status: newStatus } : req
+              )
+            );
+          }}
+        >
+          <option value="submitted">submitted</option>
+          <option value="in_review">in review</option>
+          <option value="in_progress">in progress</option>
+          <option value="completed">completed</option>
+        </select>
+      </td>
+
+      <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+        {r.payment_status === "paid" ? "✅ payé" : "❌ en attente"}
+      </td>
+    </tr>
+  ))}
+</tbody>
       </table>
     </main>
   );
