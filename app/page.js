@@ -31,7 +31,20 @@ export default function Home() {
       setMessage("Erreur : " + error.message);
       return;
     }
-
+await fetch("/api/send-email", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    fullName,
+    email,
+    country,
+    planType,
+    surface,
+    description,
+  }),
+});
     setMessage("Demande envoyée ✔");
     setFullName("");
     setEmail("");
