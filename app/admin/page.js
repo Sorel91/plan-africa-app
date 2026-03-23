@@ -63,6 +63,7 @@ export default function AdminPage() {
             <th style={{ border: "1px solid #ccc", padding: "10px" }}>Type</th>
             <th style={{ border: "1px solid #ccc", padding: "10px" }}>Surface</th>
             <th style={{ border: "1px solid #ccc", padding: "10px" }}>Status</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Paiement</th>
           </tr>
         </thead>
         <tbody>
@@ -73,6 +74,7 @@ export default function AdminPage() {
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.country}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.plan_type}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.surface}</td>
+               <td style={{ border: "1px solid #ccc", padding: "10px" }}> {r.payment_status === "paid" ? "✅ payé" : "❌ en attente"}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>
   <select
     value={r.status}
