@@ -58,7 +58,29 @@ await fetch("/api/send-email", {
     <main style={{ padding: "40px", fontFamily: "Arial", maxWidth: "700px", margin: "0 auto" }}>
       <h1>Plan Africa</h1>
       <p>Demandez votre plan 2D ou 3D.</p>
+<button
+  onClick={async () => {
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+    });
 
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  }}
+  style={{
+    padding: "12px",
+    background: "#111827",
+    color: "white",
+    border: "none",
+    marginBottom: "20px",
+    cursor: "pointer",
+  }}
+>
+  Payer et démarrer
+</button>
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <input
           type="text"
