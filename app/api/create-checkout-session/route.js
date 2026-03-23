@@ -20,8 +20,8 @@ export async function POST() {
           quantity: 1,
         },
       ],
-      success_url: "https://TON-DOMAINE/success",
-      cancel_url: "https://TON-DOMAINE/cancel",
+      success_url: "https://vercel.com/beydis-projects/plan-africa-app/deployments/success",
+      cancel_url: "https://vercel.com/beydis-projects/plan-africa-app/deployments/cancel",
     });
 
     return Response.json({ url: session.url });
