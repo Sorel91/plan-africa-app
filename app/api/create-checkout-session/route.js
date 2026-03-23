@@ -4,7 +4,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request) {
   try {
-    const { formula } = await request.json();
+    const { formula, requestId } = await request.json();
 
     let amount = 4900;
     let name = "Plan Express Basic";
@@ -22,6 +22,10 @@ export async function POST(request) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
+      client_reference_id: requestId,
+      metadata: {
+        formula: formula,
+      },
       line_items: [
         {
           price_data: {
@@ -34,7 +38,7 @@ export async function POST(request) {
           quantity: 1,
         },
       ],
-      success_url: "https://TON-DOMAINE/success",
+      success_url: `https://TON-DOMAINE/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: "https://TON-DOMAINE/cancel",
     });
 
