@@ -64,6 +64,7 @@ export default function AdminPage() {
             <th style={{ border: "1px solid #ccc", padding: "10px" }}>Surface</th>
             <th style={{ border: "1px solid #ccc", padding: "10px" }}>Status</th>
             <th style={{ border: "1px solid #ccc", padding: "10px" }}>Paiement</th>
+            <th style={{ border: "1px solid #ccc", padding: "10px" }}>Relance</th>
           </tr>
         </thead>
         <tbody>
@@ -103,6 +104,34 @@ export default function AdminPage() {
       <td style={{ border: "1px solid #ccc", padding: "10px" }}>
         {r.payment_status === "paid" ? "✅ payé" : "❌ en attente"}
       </td>
+        <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+  <button
+    onClick={async () => {
+      await fetch("/api/remind-client", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: r.full_name,
+          email: r.email,
+          formula: r.formula,
+        }),
+      });
+
+      alert("Relance envoyée");
+    }}
+    style={{
+      padding: "8px 12px",
+      background: "#2563eb",
+      color: "white",
+      border: "none",
+      cursor: "pointer",
+    }}
+  >
+    Relancer
+  </button>
+</td>
     </tr>
   ))}
 </tbody>
