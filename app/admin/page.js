@@ -58,7 +58,30 @@ export default function AdminPage() {
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.country}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.plan_type}</td>
               <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.surface}</td>
-              <td style={{ border: "1px solid #ccc", padding: "10px" }}>{r.status}</td>
+              <td style={{ border: "1px solid #ccc", padding: "10px" }}>
+  <select
+    value={r.status}
+    onChange={async (e) => {
+      const newStatus = e.target.value;
+
+      await supabase
+        .from("requests")
+        .update({ status: newStatus })
+        .eq("id", r.id);
+
+      setRequests((prev) =>
+        prev.map((req) =>
+          req.id === r.id ? { ...req, status: newStatus } : req
+        )
+      );
+    }}
+  >
+    <option value="submitted">submitted</option>
+    <option value="in_review">in review</option>
+    <option value="in_progress">in progress</option>
+    <option value="completed">completed</option>
+  </select>
+</td>
             </tr>
           ))}
         </tbody>
