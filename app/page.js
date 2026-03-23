@@ -176,17 +176,47 @@ await fetch("/api/send-email", {
 >
   Basic — 49€
 </button>
-      <button
-        style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
-      >
-        Standard — 79€
-      </button>
+<button
+  onClick={async () => {
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ formula: "standard" }),
+    });
 
-      <button
-        style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
-      >
-        Premium — 100€
-      </button>
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  }}
+  style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
+>
+  Standard — 79€
+</button>
+
+<button
+  onClick={async () => {
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ formula: "premium" }),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  }}
+  style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
+>
+  Premium — 100€
+</button>
     </div>
   </div>
 )}
