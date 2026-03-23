@@ -11,6 +11,7 @@ export default function Home() {
   const [surface, setSurface] = useState("");
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
+  const [showOffers, setShowOffers] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -45,7 +46,8 @@ await fetch("/api/send-email", {
     description,
   }),
 });
-    setMessage("Demande envoyée ✔");
+    setMessage("Demande enregistrée ✔ Choisissez maintenant une formule.");
+    setShowOffers(true);
     setFullName("");
     setEmail("");
     setCountry("");
@@ -149,7 +151,31 @@ await fetch("/api/send-email", {
           Envoyer la demande
         </button>
       </form>
+{showOffers && (
+  <div style={{ marginTop: "24px" }}>
+    <h2>Choisissez votre formule</h2>
 
+    <div style={{ display: "grid", gap: "12px" }}>
+      <button
+        style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
+      >
+        Basic — 49€
+      </button>
+
+      <button
+        style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
+      >
+        Standard — 79€
+      </button>
+
+      <button
+        style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
+      >
+        Premium — 100€
+      </button>
+    </div>
+  </div>
+)}
       <p style={{ marginTop: "16px" }}>{message}</p>
     </main>
   );
