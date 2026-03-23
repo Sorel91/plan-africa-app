@@ -2,8 +2,23 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-export async function POST() {
+export async function POST(request) {
   try {
+    const { formula } = await request.json();
+
+    let amount = 4900;
+    let name = "Plan Express Basic";
+
+    if (formula === "standard") {
+      amount = 7900;
+      name = "Plan Express Standard";
+    }
+
+    if (formula === "premium") {
+      amount = 10000;
+      name = "Plan Express Premium";
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -12,23 +27,19 @@ export async function POST() {
           price_data: {
             currency: "eur",
             product_data: {
-              name: "Plan Express 2D",
-              description: "Plan low-cost avec livraison rapide",
+              name,
             },
-            unit_amount: 4900,
+            unit_amount: amount,
           },
           quantity: 1,
         },
       ],
-      success_url: "https://vercel.com/beydis-projects/plan-africa-app/deployments/success",
-      cancel_url: "https://vercel.com/beydis-projects/plan-africa-app/deployments/cancel",
+      success_url: "https://TON-DOMAINE/success",
+      cancel_url: "https://TON-DOMAINE/cancel",
     });
 
     return Response.json({ url: session.url });
   } catch (error) {
-    return Response.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return Response.json({ error: error.message }, { status: 500 });
   }
 }
