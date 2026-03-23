@@ -156,12 +156,26 @@ await fetch("/api/send-email", {
     <h2>Choisissez votre formule</h2>
 
     <div style={{ display: "grid", gap: "12px" }}>
-      <button
-        style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
-      >
-        Basic — 49€
-      </button>
+<button
+  onClick={async () => {
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ formula: "basic" }),
+    });
 
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  }}
+  style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
+>
+  Basic — 49€
+</button>
       <button
         style={{ padding: "12px", border: "1px solid #ccc", background: "white" }}
       >
