@@ -53,8 +53,7 @@ setRequestId(data.id);
     description,
   }),
 });
-    setMessage("Demande enregistrée ✔ Choisissez maintenant une formule.");
-    setShowOffers(true);
+    window.location.href = `/offers?requestId=${data.id}`;
     setFullName("");
     setEmail("");
     setCountry("");
