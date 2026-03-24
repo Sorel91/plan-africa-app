@@ -46,7 +46,7 @@ export async function GET() {
             <h2>Bonjour ${request.full_name || ""},</h2>
             <p>Nous avons bien reçu votre demande de plan.</p>
             <p>Vous pouvez maintenant choisir votre formule et finaliser votre paiement :</p>
-            <p><a href="https://plan-africa-app.vercel.app/">Voir les formules et finaliser</a></p>
+            <p><a href="https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/offers?requestId=${requestId}">Voir les formules et finaliser</a></p>
             <p>Bien à vous,<br/>Plan Africa</p>
           `,
         });
