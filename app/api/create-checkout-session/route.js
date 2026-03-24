@@ -39,7 +39,7 @@ export async function POST(request) {
         },
       ],
       success_url: "https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/offers?requestId=${requestId}",
     });
 
     return Response.json({ url: session.url });
