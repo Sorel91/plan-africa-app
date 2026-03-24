@@ -38,8 +38,8 @@ export async function POST(request) {
           quantity: 1,
         },
       ],
-      success_url: "https://plan-africa-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "https://plan-africa-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      success_url: "https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
     });
 
     return Response.json({ url: session.url });
