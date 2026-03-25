@@ -1,10 +1,31 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
+
 export default function OffersPage() {
+  const [requestData, setRequestData] = useState(null);
+
   const requestId =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("requestId")
       : null;
+
+  useEffect(() => {
+    async function loadRequest() {
+      if (!requestId) return;
+
+      const { data } = await supabase
+        .from("requests")
+        .select("*")
+        .eq("id", requestId)
+        .single();
+
+      setRequestData(data);
+    }
+
+    loadRequest();
+  }, [requestId]);
 
   async function handleCheckout(formula) {
     const res = await fetch("/api/create-checkout-session", {
@@ -36,6 +57,39 @@ export default function OffersPage() {
             Sélectionnez l’offre la plus adaptée à votre besoin et finalisez votre commande.
           </p>
         </div>
+
+        {requestData && (
+          <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900">Résumé de votre projet</h2>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Pays</p>
+                <p className="mt-1 font-medium">{requestData.country || "-"}</p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Type de plan</p>
+                <p className="mt-1 font-medium">{requestData.plan_type || "-"}</p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Surface</p>
+                <p className="mt-1 font-medium">{requestData.surface || "-"}</p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Statut</p>
+                <p className="mt-1 font-medium">{requestData.status || "-"}</p>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-2xl bg-slate-50 p-4">
+              <p className="text-sm text-slate-500">Description</p>
+              <p className="mt-1 font-medium">{requestData.description || "-"}</p>
+            </div>
+          </div>
+        )}
 
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
