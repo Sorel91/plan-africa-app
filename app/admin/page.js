@@ -107,17 +107,18 @@ export default function AdminPage() {
         <td style={{ border: "1px solid #ccc", padding: "10px" }}>
   <button
     onClick={async () => {
-      await fetch("/api/remind-client", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName: r.full_name,
-          email: r.email,
-          formula: r.formula,
-        }),
-      });
+     await fetch("/api/remind-client", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    fullName: r.full_name,
+    email: r.email,
+    formula: r.formula,
+    requestId: r.id,
+  }),
+});
 
       alert("Relance envoyée");
     }}
