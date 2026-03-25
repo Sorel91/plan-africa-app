@@ -68,6 +68,7 @@ export default function Home() {
         surface,
         budget,
         description,
+         formula: selectedFormula || null,
       }),
     });
 
