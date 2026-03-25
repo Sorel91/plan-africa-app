@@ -11,9 +11,9 @@ export default function RootLayout({ children }) {
   {/* HEADER */}
   <header className="border-b bg-white px-6 py-4 flex justify-between items-center">
     <a href="/" className="font-bold text-lg">Plan Africa</a>
-
     <nav className="flex gap-6 text-sm">
-      <a href="/" className="hover:text-emerald-600">Accueil</a>
+      <a href="/" className="hover:text-emerald-600">Accueil</a> 
+      <a href="/comment-ca-marche" className="hover:text-emerald-600">Comment ça marche</a>
       <a href="/contact" className="hover:text-emerald-600">Contact</a>
     </nav>
   </header>
