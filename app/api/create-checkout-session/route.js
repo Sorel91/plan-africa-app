@@ -43,8 +43,8 @@ export async function POST(request) {
 
       mode: "payment",
 
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?requestId=${requestId}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/prix`,
+      success_url: "https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/offers?requestId=${requestId}",
 
       metadata: {
         requestId: requestId || "",
