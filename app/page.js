@@ -13,6 +13,17 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [selectedFormula, setSelectedFormula] = useState("");
 
+  useEffect(() => {
+    const formula =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("formula")
+        : null;
+
+    if (formula) {
+      setSelectedFormula(formula);
+    }
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -26,6 +37,7 @@ export default function Home() {
           plan_type: planType,
           surface,
           description,
+          formula: selectedFormula || null,
           status: "submitted",
           payment_status: "pending",
         },
@@ -53,6 +65,26 @@ export default function Home() {
       }),
     });
 
+    if (selectedFormula) {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formula: selectedFormula,
+          requestId: data.id,
+        }),
+      });
+
+      const checkout = await res.json();
+
+      if (checkout.url) {
+        window.location.href = checkout.url;
+        return;
+      }
+    }
+
     window.location.href = `/offers?requestId=${data.id}`;
   }
 
@@ -73,14 +105,15 @@ export default function Home() {
               Décrivez votre projet, choisissez votre formule, puis recevez un plan
               low-cost de manière simple et rapide.
             </p>
+
             <div className="mt-6">
-  <a
-    href="/comment-ca-marche"
-    className="text-emerald-600 font-semibold hover:underline"
-  >
-    Voir comment ça marche →
-  </a>
-</div>
+              <a
+                href="/comment-ca-marche"
+                className="text-emerald-600 font-semibold hover:underline"
+              >
+                Voir comment ça marche →
+              </a>
+            </div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -107,21 +140,12 @@ export default function Home() {
                 Remplissez le formulaire puis choisissez la formule adaptée.
               </p>
             </div>
-            useEffect(() => {
-  const formula =
-    typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search).get("formula")
-      : null;
 
-  if (formula) {
-    setSelectedFormula(formula);
-  }
-}, []);
-{selectedFormula && (
-  <div className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-    Formule sélectionnée : <strong>{selectedFormula}</strong>
-  </div>
-)}
+            {selectedFormula && (
+              <div className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                Formule sélectionnée : <strong>{selectedFormula}</strong>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
@@ -188,7 +212,7 @@ export default function Home() {
                 type="submit"
                 className="w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-700"
               >
-                Continuer vers les offres
+                {selectedFormula ? "Continuer vers le paiement" : "Continuer vers les offres"}
               </button>
             </form>
 
