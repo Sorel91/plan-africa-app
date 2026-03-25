@@ -7,6 +7,7 @@ export default function ContactPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,7 +20,7 @@ export default function ContactPage() {
     });
 
     if (res.ok) {
-      setStatus("Message envoyé ✔");
+      setSubmitted(true);
       setName("");
       setEmail("");
       setMessage("");
