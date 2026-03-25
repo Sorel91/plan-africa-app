@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { fullName, email, formula } = body;
+    const { fullName, email, formula, requestId } = body;
 
     const offerText =
       formula === "basic"
@@ -15,7 +15,8 @@ export async function POST(request) {
         : formula === "premium"
         ? "Premium — 100€"
         : "une formule adaptée à votre besoin";
-     const data = await resend.emails.send({
+
+    const data = await resend.emails.send({
       from: "Plan Africa <onboarding@resend.dev>",
       to: [email],
       subject: "Relance concernant votre demande Plan Africa",
