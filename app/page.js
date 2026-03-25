@@ -72,6 +72,14 @@ export default function Home() {
               Décrivez votre projet, choisissez votre formule, puis recevez un plan
               low-cost de manière simple et rapide.
             </p>
+            <div className="mt-6">
+  <a
+    href="/comment-ca-marche"
+    className="text-emerald-600 font-semibold hover:underline"
+  >
+    Voir comment ça marche →
+  </a>
+</div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
