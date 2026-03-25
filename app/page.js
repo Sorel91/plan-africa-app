@@ -118,6 +118,11 @@ export default function Home() {
     setSelectedFormula(formula);
   }
 }, []);
+{selectedFormula && (
+  <div className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+    Formule sélectionnée : <strong>{selectedFormula}</strong>
+  </div>
+)}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
