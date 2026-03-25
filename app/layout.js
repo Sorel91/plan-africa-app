@@ -1,3 +1,4 @@
+import "./globals.css";
 export const metadata = {
   title: "Plan Africa",
   description: "Application de demande de plans 2D et 3D",
