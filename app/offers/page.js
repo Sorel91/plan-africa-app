@@ -46,49 +46,23 @@ export default function OffersPage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="mx-auto max-w-6xl px-6 py-12 lg:px-8 lg:py-16">
-        
-        {/* HEADER */}
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
             Plan Africa
           </span>
 
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-            Recevez des propositions de plans adaptées à votre projet
+            Choisissez la formule adaptée à votre projet
           </h1>
 
           <p className="mt-4 text-lg text-slate-600">
-            Nous créons plusieurs propositions personnalisées pour vous aider à visualiser et organiser votre future maison.
+            Sélectionnez l’offre qui vous convient le mieux pour recevoir des
+            propositions de plans personnalisés.
           </p>
         </div>
 
-        {/* RÉSUMÉ */}
-        {requestData && (
-          <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold">Votre projet</h2>
-
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="bg-slate-50 p-4 rounded-xl">
-                <p className="text-sm text-slate-500">Pays</p>
-                <p className="font-medium">{requestData.country}</p>
-              </div>
-
-              <div className="bg-slate-50 p-4 rounded-xl">
-                <p className="text-sm text-slate-500">Type</p>
-                <p className="font-medium">{requestData.plan_type}</p>
-              </div>
-
-              <div className="bg-slate-50 p-4 rounded-xl">
-                <p className="text-sm text-slate-500">Surface</p>
-                <p className="font-medium">{requestData.surface}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* OFFRES */}
+        {/* OFFRES D'ABORD */}
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
-
           {/* ESSENTIEL */}
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
             <h3 className="text-xl font-semibold">Essentiel</h3>
@@ -103,7 +77,7 @@ export default function OffersPage() {
 
             <button
               onClick={() => handleCheckout("basic")}
-              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
+              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white hover:bg-slate-800"
             >
               Choisir Essentiel
             </button>
@@ -111,7 +85,7 @@ export default function OffersPage() {
 
           {/* CONFORT */}
           <div className="rounded-3xl border-2 border-emerald-500 bg-white p-8 shadow-lg">
-            <div className="mb-2 text-xs text-emerald-600 font-semibold">
+            <div className="mb-2 text-xs font-semibold text-emerald-600">
               LE PLUS CHOISI
             </div>
 
@@ -127,7 +101,7 @@ export default function OffersPage() {
 
             <button
               onClick={() => handleCheckout("standard")}
-              className="mt-8 w-full rounded-xl bg-emerald-600 px-4 py-3 text-white font-semibold hover:bg-emerald-700"
+              className="mt-8 w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white hover:bg-emerald-700"
             >
               Choisir Confort
             </button>
@@ -147,19 +121,60 @@ export default function OffersPage() {
 
             <button
               onClick={() => handleCheckout("premium")}
-              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
+              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white hover:bg-slate-800"
             >
               Choisir Premium
             </button>
           </div>
-
         </div>
 
-        {/* DISCLAIMER */}
-        <p className="mt-10 text-center text-sm text-slate-500">
-          Ces plans sont destinés à la pré-conception et ne remplacent pas un plan technique de construction.
-        </p>
+        {/* RÉCAPITULATIF EN DESSOUS */}
+        {requestData && (
+          <div className="mx-auto mt-14 max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900">
+              Récapitulatif de votre projet
+            </h2>
 
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Lieu du projet</p>
+                <p className="mt-1 font-medium">{requestData.country || "-"}</p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Type de maison</p>
+                <p className="mt-1 font-medium">{requestData.house_type || "-"}</p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Nombre de chambres</p>
+                <p className="mt-1 font-medium">{requestData.bedrooms || "-"}</p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Surface</p>
+                <p className="mt-1 font-medium">{requestData.surface || "-"}</p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-4 sm:col-span-2">
+                <p className="text-sm text-slate-500">Budget</p>
+                <p className="mt-1 font-medium">{requestData.budget || "-"}</p>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-2xl bg-slate-50 p-4">
+              <p className="text-sm text-slate-500">Description du projet</p>
+              <p className="mt-1 font-medium whitespace-pre-line">
+                {requestData.description || "-"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <p className="mt-10 text-center text-sm text-slate-500">
+          Ces plans sont destinés à la pré-conception et ne remplacent pas un
+          plan technique de construction.
+        </p>
       </section>
     </main>
   );
