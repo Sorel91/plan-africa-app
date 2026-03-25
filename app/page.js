@@ -12,6 +12,7 @@ export default function Home() {
   const [surface, setSurface] = useState("");
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
+  const [selectedFormula, setSelectedFormula] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -107,6 +108,16 @@ export default function Home() {
                 Remplissez le formulaire puis choisissez la formule adaptée.
               </p>
             </div>
+            useEffect(() => {
+  const formula =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("formula")
+      : null;
+
+  if (formula) {
+    setSelectedFormula(formula);
+  }
+}, []);
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
