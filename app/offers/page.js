@@ -46,124 +46,120 @@ export default function OffersPage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="mx-auto max-w-6xl px-6 py-12 lg:px-8 lg:py-16">
+        
+        {/* HEADER */}
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
             Plan Africa
           </span>
+
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-            Choisissez votre formule
+            Recevez des propositions de plans adaptées à votre projet
           </h1>
+
           <p className="mt-4 text-lg text-slate-600">
-            Sélectionnez l’offre la plus adaptée à votre besoin et finalisez votre commande.
+            Nous créons plusieurs propositions personnalisées pour vous aider à visualiser et organiser votre future maison.
           </p>
         </div>
 
+        {/* RÉSUMÉ */}
         {requestData && (
           <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900">Résumé de votre projet</h2>
+            <h2 className="text-xl font-semibold">Votre projet</h2>
 
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-slate-50 p-4">
+              <div className="bg-slate-50 p-4 rounded-xl">
                 <p className="text-sm text-slate-500">Pays</p>
-                <p className="mt-1 font-medium">{requestData.country || "-"}</p>
+                <p className="font-medium">{requestData.country}</p>
               </div>
 
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Type de plan</p>
-                <p className="mt-1 font-medium">{requestData.plan_type || "-"}</p>
+              <div className="bg-slate-50 p-4 rounded-xl">
+                <p className="text-sm text-slate-500">Type</p>
+                <p className="font-medium">{requestData.plan_type}</p>
               </div>
 
-              <div className="rounded-2xl bg-slate-50 p-4">
+              <div className="bg-slate-50 p-4 rounded-xl">
                 <p className="text-sm text-slate-500">Surface</p>
-                <p className="mt-1 font-medium">{requestData.surface || "-"}</p>
+                <p className="font-medium">{requestData.surface}</p>
               </div>
-
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Statut</p>
-                <p className="mt-1 font-medium">{requestData.status || "-"}</p>
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-2xl bg-slate-50 p-4">
-              <p className="text-sm text-slate-500">Description</p>
-              <p className="mt-1 font-medium">{requestData.description || "-"}</p>
             </div>
           </div>
         )}
 
+        {/* OFFRES */}
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Basic
-            </p>
-            <h2 className="mt-3 text-3xl font-bold">49€</h2>
-            <p className="mt-3 text-sm text-slate-600">
-              Une formule simple pour un besoin rapide et accessible.
-            </p>
 
-            <ul className="mt-6 space-y-3 text-sm text-slate-700">
-              <li>• 1 proposition de plan</li>
-              <li>• Format simple et lisible</li>
-              <li>• Idéal pour démarrer vite</li>
+          {/* ESSENTIEL */}
+          <div className="rounded-3xl border bg-white p-8 shadow-sm">
+            <h3 className="text-xl font-semibold">Essentiel</h3>
+            <p className="mt-2 text-3xl font-bold">29€</p>
+
+            <ul className="mt-6 space-y-2 text-sm text-slate-600">
+              <li>✔ 2 propositions de plans personnalisés</li>
+              <li>✔ Adapté à votre besoin</li>
+              <li>✔ Plan clair et lisible</li>
+              <li>✔ Livraison en 48h</li>
             </ul>
 
             <button
               onClick={() => handleCheckout("basic")}
-              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800"
+              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
             >
-              Choisir Basic
+              Choisir Essentiel
             </button>
           </div>
 
+          {/* CONFORT */}
           <div className="rounded-3xl border-2 border-emerald-500 bg-white p-8 shadow-lg">
-            <div className="mb-3 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-              Le plus choisi
+            <div className="mb-2 text-xs text-emerald-600 font-semibold">
+              LE PLUS CHOISI
             </div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Standard
-            </p>
-            <h2 className="mt-3 text-3xl font-bold">79€</h2>
-            <p className="mt-3 text-sm text-slate-600">
-              Le meilleur équilibre entre prix, détail et qualité.
-            </p>
 
-            <ul className="mt-6 space-y-3 text-sm text-slate-700">
-              <li>• Plan plus détaillé</li>
-              <li>• Meilleure présentation</li>
-              <li>• Adapté à la plupart des projets</li>
+            <h3 className="text-xl font-semibold">Confort</h3>
+            <p className="mt-2 text-3xl font-bold">59€</p>
+
+            <ul className="mt-6 space-y-2 text-sm text-slate-600">
+              <li>✔ 3 propositions de plans personnalisés</li>
+              <li>✔ Organisation optimisée</li>
+              <li>✔ 1 modification incluse</li>
+              <li>✔ Livraison en 24h – 48h</li>
             </ul>
 
             <button
               onClick={() => handleCheckout("standard")}
-              className="mt-8 w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-700"
+              className="mt-8 w-full rounded-xl bg-emerald-600 px-4 py-3 text-white font-semibold hover:bg-emerald-700"
             >
-              Choisir Standard
+              Choisir Confort
             </button>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Premium
-            </p>
-            <h2 className="mt-3 text-3xl font-bold">100€</h2>
-            <p className="mt-3 text-sm text-slate-600">
-              Pour un rendu plus poussé et une expérience plus premium.
-            </p>
+          {/* PREMIUM */}
+          <div className="rounded-3xl border bg-white p-8 shadow-sm">
+            <h3 className="text-xl font-semibold">Premium</h3>
+            <p className="mt-2 text-3xl font-bold">89€</p>
 
-            <ul className="mt-6 space-y-3 text-sm text-slate-700">
-              <li>• Niveau de détail supérieur</li>
-              <li>• Présentation renforcée</li>
-              <li>• Convient aux projets plus exigeants</li>
+            <ul className="mt-6 space-y-2 text-sm text-slate-600">
+              <li>✔ 3 propositions optimisées</li>
+              <li>✔ Visualisation 3D simple</li>
+              <li>✔ 2 modifications incluses</li>
+              <li>✔ Traitement prioritaire (24h)</li>
             </ul>
 
             <button
               onClick={() => handleCheckout("premium")}
-              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800"
+              className="mt-8 w-full rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
             >
               Choisir Premium
             </button>
           </div>
+
         </div>
+
+        {/* DISCLAIMER */}
+        <p className="mt-10 text-center text-sm text-slate-500">
+          Ces plans sont destinés à la pré-conception et ne remplacent pas un plan technique de construction.
+        </p>
+
       </section>
     </main>
   );
