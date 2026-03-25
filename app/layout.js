@@ -7,7 +7,32 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+       <body className="flex min-h-screen flex-col">
+  {/* HEADER */}
+  <header className="border-b bg-white px-6 py-4 flex justify-between items-center">
+    <a href="/" className="font-bold text-lg">Plan Africa</a>
+
+    <nav className="flex gap-6 text-sm">
+      <a href="/" className="hover:text-emerald-600">Accueil</a>
+      <a href="/contact" className="hover:text-emerald-600">Contact</a>
+    </nav>
+  </header>
+
+  {/* CONTENU */}
+  <main className="flex-1">{children}</main>
+
+  {/* FOOTER */}
+  <footer className="border-t bg-white px-6 py-6 text-sm text-slate-600">
+    <div className="mx-auto max-w-6xl flex flex-col gap-4 sm:flex-row sm:justify-between">
+      <p>© {new Date().getFullYear()} Plan Africa. Tous droits réservés.</p>
+
+      <div className="flex gap-4">
+        <a href="/contact" className="hover:text-emerald-600">Contact</a>
+        <a href="#" className="hover:text-emerald-600">Mentions légales</a>
+      </div>
+    </div>
+  </footer>
+  </body>
     </html>
   );
 }
