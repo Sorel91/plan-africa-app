@@ -166,19 +166,14 @@ export default function Home() {
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
               />
 
-              <select
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                required
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
-              >
-                <option value="">Choisir un pays</option>
-                <option value="Mali">Mali</option>
-                <option value="Sénégal">Sénégal</option>
-                <option value="Côte d'Ivoire">Côte d'Ivoire</option>
-                <option value="Burkina Faso">Burkina Faso</option>
-                <option value="Mauritanie">Mauritanie</option>
-              </select>
+              <input
+  type="text"
+  placeholder="Pays du projet"
+  value={country}
+  onChange={(e) => setCountry(e.target.value)}
+  required
+  className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+/>
 
               <select
                 value={planType}
