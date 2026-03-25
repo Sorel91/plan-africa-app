@@ -67,7 +67,7 @@ export default function Home() {
             </span>
 
             <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-              Obtenez rapidement un plan 2D ou 3D adapté à votre besoin
+              Obtenez rapidement un plan 2D ou 3D adapté à votre besoin à partir 29 euros
             </h1>
 
             <p className="mt-5 text-lg leading-8 text-slate-600">
