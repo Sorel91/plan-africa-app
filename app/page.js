@@ -105,10 +105,13 @@ export default function Home() {
             <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
               Plan Africa
             </span>
-
             <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-              Visualisez votre future maison avant de construire
-            </h1>
+  Visualisez votre future maison avant de construire
+  <br />
+  <span className="mt-2 block text-emerald-600 text-3xl sm:text-4xl">
+    à partir de 29€
+  </span>
+</h1>
 
             <p className="mt-5 text-lg text-slate-600">
               Recevez plusieurs propositions de plans personnalisés adaptées à votre besoin.
