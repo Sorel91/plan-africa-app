@@ -103,7 +103,7 @@ export default function Home() {
           {/* TEXTE */}
           <div>
             <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
-              Plan Africa
+              Planora
             </span>
 
             <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl leading-tight">
