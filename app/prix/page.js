@@ -1,4 +1,6 @@
 "use client";
+import { useEffect } from "react";
+import { trackEvent } from "../../lib/trackEvent";
 
 export default function PricingPage() {
   function goToForm(formula) {
@@ -101,4 +103,10 @@ export default function PricingPage() {
       </section>
     </main>
   );
+  useEffect(() => {
+  trackEvent({
+    eventName: "view_pricing",
+    page: "/prix",
+  });
+}, []);
 }
