@@ -4,9 +4,14 @@ import { trackEvent } from "../../lib/trackEvent";
 
 export default function PricingPage() {
   function goToForm(formula) {
-    window.location.href = `/?formula=${formula}`;
-  }
+  trackEvent({
+    eventName: "select_formula",
+    page: "/prix",
+    formula,
+  });
 
+  window.location.href = `/?formula=${formula}`;
+}
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="mx-auto max-w-6xl px-6 py-12 lg:px-8 lg:py-16">
