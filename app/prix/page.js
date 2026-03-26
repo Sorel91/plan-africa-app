@@ -1,14 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
 import { trackEvent } from "../../lib/trackEvent";
 
 export default function PricingPage() {
+  const [pricing, setPricing] = useState([]);
+
   useEffect(() => {
     trackEvent({
       eventName: "view_pricing",
       page: "/prix",
     });
+
+    async function loadPricing() {
+      const { data, error } = await supabase
+        .from("pricing")
+        .select("*")
+        .order("id", { ascending: true });
+
+      if (!error && data) {
+        setPricing(data);
+      }
+    }
+
+    loadPricing();
   }, []);
 
   async function goToForm(formula) {
@@ -19,6 +35,14 @@ export default function PricingPage() {
     });
 
     window.location.href = `/?formula=${formula}`;
+  }
+
+  const basic = pricing.find((p) => p.formula === "basic");
+  const standard = pricing.find((p) => p.formula === "standard");
+  const premium = pricing.find((p) => p.formula === "premium");
+
+  function euro(amount) {
+    return amount ? `${amount / 100}€` : "-";
   }
 
   return (
@@ -40,8 +64,8 @@ export default function PricingPage() {
 
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
-            <h3 className="text-xl font-semibold">Essentiel</h3>
-            <p className="mt-2 text-3xl font-bold">29€</p>
+            <h3 className="text-xl font-semibold">{basic?.label || "Essentiel"}</h3>
+            <p className="mt-2 text-3xl font-bold">{euro(basic?.amount)}</p>
 
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 2 propositions de plans personnalisés</li>
@@ -63,8 +87,8 @@ export default function PricingPage() {
               LE PLUS CHOISI
             </div>
 
-            <h3 className="text-xl font-semibold">Confort</h3>
-            <p className="mt-2 text-3xl font-bold">59€</p>
+            <h3 className="text-xl font-semibold">{standard?.label || "Confort"}</h3>
+            <p className="mt-2 text-3xl font-bold">{euro(standard?.amount)}</p>
 
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 3 propositions de plans personnalisés</li>
@@ -82,8 +106,8 @@ export default function PricingPage() {
           </div>
 
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
-            <h3 className="text-xl font-semibold">Premium</h3>
-            <p className="mt-2 text-3xl font-bold">89€</p>
+            <h3 className="text-xl font-semibold">{premium?.label || "Premium"}</h3>
+            <p className="mt-2 text-3xl font-bold">{euro(premium?.amount)}</p>
 
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 3 propositions optimisées</li>
