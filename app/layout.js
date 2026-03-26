@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Plan Africa",
+  title: "Planora",
   description: "Application de demande de plans 2D et 3D",
 };
 
@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
               href="/"
               className="text-lg font-bold tracking-tight text-slate-900"
             >
-              Plan Africa
+              Planora
             </a>
 
             <nav className="hidden items-center gap-3 md:flex">
