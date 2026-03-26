@@ -1,25 +1,29 @@
 "use client";
+
 import { useEffect } from "react";
 import { trackEvent } from "../../lib/trackEvent";
 
 export default function PricingPage() {
- async function goToForm(formula) {
-  await trackEvent({
-    eventName: "select_formula",
-    page: "/prix",
-    formula,
-  });
+  useEffect(() => {
+    trackEvent({
+      eventName: "view_pricing",
+      page: "/prix",
+    });
+  }, []);
 
-  window.location.href = `/?formula=${formula}`;
-};
+  async function goToForm(formula) {
+    await trackEvent({
+      eventName: "select_formula",
+      page: "/prix",
+      formula,
+    });
 
-  window.location.href = `/?formula=${formula}`;
-}
+    window.location.href = `/?formula=${formula}`;
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="mx-auto max-w-6xl px-6 py-12 lg:px-8 lg:py-16">
-
-        {/* HEADER */}
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
             Tarifs
@@ -34,10 +38,7 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* OFFRES */}
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
-
-          {/* ESSENTIEL */}
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
             <h3 className="text-xl font-semibold">Essentiel</h3>
             <p className="mt-2 text-3xl font-bold">29€</p>
@@ -57,9 +58,8 @@ export default function PricingPage() {
             </button>
           </div>
 
-          {/* CONFORT */}
           <div className="rounded-3xl border-2 border-emerald-500 bg-white p-8 shadow-lg">
-            <div className="mb-2 text-xs text-emerald-600 font-semibold">
+            <div className="mb-2 text-xs font-semibold text-emerald-600">
               LE PLUS CHOISI
             </div>
 
@@ -81,7 +81,6 @@ export default function PricingPage() {
             </button>
           </div>
 
-          {/* PREMIUM */}
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
             <h3 className="text-xl font-semibold">Premium</h3>
             <p className="mt-2 text-3xl font-bold">89€</p>
@@ -100,21 +99,12 @@ export default function PricingPage() {
               Commencer
             </button>
           </div>
-
         </div>
 
-        {/* DISCLAIMER */}
         <p className="mt-10 text-center text-sm text-slate-500">
           Ces plans sont destinés à la pré-conception et ne remplacent pas un plan technique de construction.
         </p>
-
       </section>
     </main>
   );
-  useEffect(() => {
-  trackEvent({
-    eventName: "view_pricing",
-    page: "/prix",
-  });
-}, []);
 }
