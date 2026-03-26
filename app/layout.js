@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Planora",
+  title: "Planora - Votre plan de maison à petit prix ",
   description: "Application de demande de plans 2D et 3D",
 };
 
