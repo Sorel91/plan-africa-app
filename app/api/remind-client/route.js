@@ -27,7 +27,7 @@ export async function POST(request) {
           formula ? `<strong>${offerText}</strong>` : ""
         }.</p>
         <p>Si vous avez déjà commencé, il vous suffit de revenir sur le site pour poursuivre.</p>
-        <p><a href="https://plan-africa-app-git-v2-nextjs-beydis-projects.vercel.app/offers?requestId=${requestId}">Voir les formules et finaliser</a></p>
+        <p><a href="https://planora.immo/offers?requestId=${requestId}">Voir les formules et finaliser</a></p>
         <p>Bien à vous,<br/>Plan Africa</p>
       `,
     });
