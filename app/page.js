@@ -53,7 +53,12 @@ export default function Home() {
       setMessage("Erreur : " + error.message);
       return;
     }
-
+trackEvent({
+  eventName: "submit_form",
+  page: "/",
+  requestId: data.id,
+  formula: selectedFormula || null,
+});
     await fetch("/api/send-email", {
       method: "POST",
       headers: {
