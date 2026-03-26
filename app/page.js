@@ -254,7 +254,38 @@ export default function Home() {
             </form>
 
             {message && <p className="mt-4 text-sm">{message}</p>}
-          </div>
+         
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+  <p className="text-sm font-semibold text-slate-900">
+    Exemple de rendu
+  </p>
+
+  <div className="mt-4 rounded-2xl border border-slate-300 bg-white p-4 shadow-sm">
+    <div className="grid grid-cols-3 gap-2">
+      <div className="col-span-2 h-20 rounded-lg border bg-slate-100 flex items-center justify-center text-xs text-slate-500">
+        Salon / Séjour
+      </div>
+      <div className="h-20 rounded-lg border bg-slate-100 flex items-center justify-center text-xs text-slate-500">
+        Cuisine
+      </div>
+      <div className="h-16 rounded-lg border bg-slate-100 flex items-center justify-center text-xs text-slate-500">
+        Chambre 1
+      </div>
+      <div className="h-16 rounded-lg border bg-slate-100 flex items-center justify-center text-xs text-slate-500">
+        Chambre 2
+      </div>
+      <div className="h-16 rounded-lg border bg-slate-100 flex items-center justify-center text-xs text-slate-500">
+        SDB
+      </div>
+    </div>
+  </div>
+
+  <p className="mt-3 text-xs text-slate-500">
+    Illustration simple d’un exemple de plan personnalisé.
+  </p>
+</div>
+        
+           </div>
 
         </div>
       </section>
