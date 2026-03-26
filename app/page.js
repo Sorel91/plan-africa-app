@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { trackEvent } from "../lib/trackEvent";
 
 export default function Home() {
   const [fullName, setFullName] = useState("");
@@ -53,12 +54,20 @@ export default function Home() {
       setMessage("Erreur : " + error.message);
       return;
     }
-trackEvent({
-  eventName: "submit_form",
-  page: "/",
-  requestId: data.id,
-  formula: selectedFormula || null,
-});
+
+    // TRACKING (sécurisé)
+    try {
+      await trackEvent({
+        eventName: "submit_form",
+        page: "/",
+        requestId: data.id,
+        formula: selectedFormula || null,
+      });
+    } catch (e) {
+      console.error("Tracking error", e);
+    }
+
+    // EMAIL
     await fetch("/api/send-email", {
       method: "POST",
       headers: {
@@ -77,6 +86,7 @@ trackEvent({
       }),
     });
 
+    // SI FORMULE → STRIPE
     if (selectedFormula) {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -97,6 +107,7 @@ trackEvent({
       }
     }
 
+    // SINON → OFFERS
     window.location.href = `/offers?requestId=${data.id}`;
   }
 
@@ -117,7 +128,6 @@ trackEvent({
               avant de construire
             </h1>
 
-            {/* PRIX HIGHLIGHT */}
             <div className="mt-4 inline-block rounded-xl bg-emerald-100 px-4 py-2">
               <span className="text-lg font-semibold text-emerald-700">
                 À partir de 29€
@@ -128,7 +138,6 @@ trackEvent({
               Recevez plusieurs propositions de plans personnalisés adaptées à votre projet.
             </p>
 
-            {/* CTA */}
             <div className="mt-8 flex flex-wrap gap-4">
               <a
                 href="/prix"
@@ -145,7 +154,6 @@ trackEvent({
               </a>
             </div>
 
-            {/* PREUVE */}
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border bg-white p-4 shadow-sm">
                 <p className="text-sm font-semibold">Rapide</p>
@@ -242,7 +250,7 @@ trackEvent({
               />
 
               <textarea
-                placeholder="Décrivez votre besoin (terrain, contraintes, style...)"
+                placeholder="Décrivez votre besoin"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
@@ -259,9 +267,7 @@ trackEvent({
             </form>
 
             {message && <p className="mt-4 text-sm">{message}</p>}
-
-        
-           </div>
+          </div>
 
         </div>
       </section>
