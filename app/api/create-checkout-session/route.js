@@ -1,50 +1,54 @@
 import Stripe from "stripe";
+import { createClient } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const supabase = createClient(
+  "https://btschxgghvblmohddqcj.supabase.co",
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 export async function POST(request) {
   try {
     const { formula, requestId } = await request.json();
 
-    let amount = 2900;
-    let name = "Essentiel";
-    let description = "2 propositions de plans personnalisés";
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL || "https://planora.immo";
 
-    if (formula === "standard") {
-      amount = 5900;
-      name = "Confort";
-      description =
-        "3 propositions de plans personnalisés + 1 modification incluse";
-    }
+    const { data: pricing, error: pricingError } = await supabase
+      .from("pricing")
+      .select("*")
+      .eq("formula", formula)
+      .single();
 
-    if (formula === "premium") {
-      amount = 8900;
-      name = "Premium";
-      description =
-        "3 propositions optimisées + visualisation 3D simple + 2 modifications";
+    if (pricingError || !pricing) {
+      return Response.json(
+        { error: "Pricing not found" },
+        { status: 400 }
+      );
     }
 
     const session = await stripe.checkout.sessions.create({
+      mode: "payment",
       payment_method_types: ["card"],
+      client_reference_id: requestId || "",
 
       line_items: [
         {
           price_data: {
             currency: "eur",
             product_data: {
-              name,
-              description,
+              name: pricing.label,
+              description: pricing.description || "",
             },
-            unit_amount: amount,
+            unit_amount: pricing.amount,
           },
           quantity: 1,
         },
       ],
 
-      mode: "payment",
-
-      success_url: "https://planora.immo/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "https://planora.immo/offers?requestId=${requestId}",
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/prix`,
 
       metadata: {
         requestId: requestId || "",
