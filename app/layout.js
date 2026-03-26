@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
 
         <footer className="border-t border-slate-200 bg-white px-6 py-6 text-sm text-slate-600">
           <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} Plan Africa. Tous droits réservés.</p>
+            <p>© {new Date().getFullYear()} Planora. Tous droits réservés.</p>
 
             <div className="flex gap-4">
               <a href="/prix" className="hover:text-emerald-600">
