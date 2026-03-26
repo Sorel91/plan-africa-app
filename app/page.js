@@ -68,7 +68,7 @@ export default function Home() {
         surface,
         budget,
         description,
-         formula: selectedFormula || null,
+        formula: selectedFormula || null,
       }),
     });
 
@@ -105,25 +105,57 @@ export default function Home() {
             <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
               Plan Africa
             </span>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-  Visualisez votre future maison avant de construire
-  <br />
-  <span className="mt-2 block text-emerald-600 text-3xl sm:text-4xl">
-    à partir de 29€
-  </span>
-</h1>
+
+            <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl leading-tight">
+              Visualisez votre future maison
+              <br />
+              avant de construire
+            </h1>
+
+            {/* PRIX HIGHLIGHT */}
+            <div className="mt-4 inline-block rounded-xl bg-emerald-100 px-4 py-2">
+              <span className="text-lg font-semibold text-emerald-700">
+                À partir de 29€
+              </span>
+            </div>
 
             <p className="mt-5 text-lg text-slate-600">
-              Recevez plusieurs propositions de plans personnalisés adaptées à votre besoin.
+              Recevez plusieurs propositions de plans personnalisés adaptées à votre projet.
             </p>
 
-            <div className="mt-6">
+            {/* CTA */}
+            <div className="mt-8 flex flex-wrap gap-4">
+              <a
+                href="/prix"
+                className="rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white shadow-sm hover:bg-emerald-700"
+              >
+                Voir les prix
+              </a>
+
               <a
                 href="/comment-ca-marche"
-                className="text-emerald-600 font-semibold hover:underline"
+                className="rounded-xl border border-slate-300 px-6 py-3 font-medium text-slate-700 hover:border-emerald-600 hover:text-emerald-700"
               >
-                Voir comment ça marche →
+                Comment ça marche
               </a>
+            </div>
+
+            {/* PREUVE */}
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold">Rapide</p>
+                <p className="mt-1 text-sm text-slate-600">Livraison en 24h à 48h</p>
+              </div>
+
+              <div className="rounded-2xl border bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold">Personnalisé</p>
+                <p className="mt-1 text-sm text-slate-600">Adapté à votre projet</p>
+              </div>
+
+              <div className="rounded-2xl border bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold">Accessible</p>
+                <p className="mt-1 text-sm text-slate-600">À partir de 29€</p>
+              </div>
             </div>
           </div>
 
