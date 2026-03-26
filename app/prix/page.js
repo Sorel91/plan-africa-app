@@ -3,12 +3,15 @@ import { useEffect } from "react";
 import { trackEvent } from "../../lib/trackEvent";
 
 export default function PricingPage() {
-  function goToForm(formula) {
-  trackEvent({
+ async function goToForm(formula) {
+  await trackEvent({
     eventName: "select_formula",
     page: "/prix",
     formula,
   });
+
+  window.location.href = `/?formula=${formula}`;
+};
 
   window.location.href = `/?formula=${formula}`;
 }
