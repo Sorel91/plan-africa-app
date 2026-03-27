@@ -82,7 +82,9 @@ export default function PricingPage() {
               <li>✔ Checklist construction</li>
               <li>❌ Estimation du coût</li>
               <li>❌ Adaptation locale</li>
+              <li>❌ Détail des surfaces</li>
               <li>❌ Modification incluse</li>
+              <li>🕒 Livraison en 48h</li>
             </ul>
 
             <button
@@ -107,11 +109,14 @@ export default function PricingPage() {
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 3 propositions de plans</li>
               <li>✔ Plan 2D avec dimensions</li>
+              <li>✔ Logique du plan optimisée</li>
+              <li>✔ Checklist construction</li>
               <li>✔ Estimation du coût</li>
               <li>✔ Adaptation locale</li>
               <li>✔ Détail des surfaces</li>
               <li>✔ 1 modification incluse</li>
               <li>❌ Variantes de plan</li>
+              <li>🕒 Livraison en 24h à 48h</li>
             </ul>
 
             <button
@@ -132,12 +137,16 @@ export default function PricingPage() {
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 3 propositions optimisées</li>
               <li>✔ Plan 2D avec dimensions</li>
+              <li>✔ Logique du plan optimisée</li>
+              <li>✔ Checklist construction</li>
               <li>✔ Estimation du coût avancée</li>
               <li>✔ Adaptation locale</li>
+              <li>✔ Détail des surfaces</li>
               <li>✔ Variantes de plan</li>
               <li>✔ 2 modifications incluses</li>
               <li>✔ Optimisation avancée</li>
               <li>✔ Traitement prioritaire</li>
+              <li>🕒 Livraison prioritaire en 24h</li>
             </ul>
 
             <button
