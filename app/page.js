@@ -54,6 +54,18 @@ export default function Home() {
       setMessage("Erreur : " + error.message);
       return;
     }
+    // EMAIL CLIENT (immédiat)
+await fetch("/api/send-client-email", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    fullName,
+    email,
+    requestId: data.id,
+  }),
+});
 
     // TRACKING (sécurisé)
     try {
