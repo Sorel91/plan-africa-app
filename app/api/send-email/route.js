@@ -25,28 +25,57 @@ export async function POST(request) {
         ? "Premium"
         : "Non sélectionnée";
 
-    const data = await resend.emails.send({
-      from: "Plan Africa <onboarding@resend.dev>",
-      to: ["beydi.sangare@gmail.com"],
-      subject: "Nouvelle demande Plan Africa",
+    await resend.emails.send({
+      from: "Planora <onboarding@resend.dev>",
+      to: ["Beydi.sangare@gmail.com"],
+
+      subject: "Nouvelle demande client - Planora",
+
       html: `
-        <h2>Nouvelle demande reçue</h2>
+<div style="font-family: Arial, sans-serif; background:#f8fafc; padding:20px;">
+  <div style="max-width:600px; margin:0 auto; background:white; border-radius:12px; padding:20px;">
 
-        <p><strong>Nom :</strong> ${fullName || "-"}</p>
-        <p><strong>Email :</strong> ${email || "-"}</p>
-        <p><strong>Lieu du projet :</strong> ${country || "-"}</p>
-        <p><strong>Type de maison :</strong> ${houseType || "-"}</p>
-        <p><strong>Nombre de chambres :</strong> ${bedrooms || "-"}</p>
-        <p><strong>Surface :</strong> ${surface || "-"}</p>
-        <p><strong>Budget :</strong> ${budget || "-"}</p>
-        <p><strong>Formule :</strong> ${formulaLabel}</p>
+    <h2 style="color:#059669; margin-bottom:10px;">
+      📩 Nouvelle demande - Planora
+    </h2>
 
-        <p><strong>Description :</strong></p>
-        <p>${description || "-"}</p>
-      `,
+    <p style="color:#475569;">
+      Un nouveau client a soumis une demande.
+    </p>
+
+    <hr style="margin:20px 0;" />
+
+    <h3 style="margin-bottom:10px;">Informations client</h3>
+
+    <p><strong>Nom :</strong> ${fullName}</p>
+    <p><strong>Email :</strong> ${email}</p>
+    <p><strong>Lieu :</strong> ${country}</p>
+    <p><strong>Type de maison :</strong> ${houseType}</p>
+    <p><strong>Chambres :</strong> ${bedrooms}</p>
+    <p><strong>Surface :</strong> ${surface || "-"}</p>
+    <p><strong>Budget :</strong> ${budget || "-"}</p>
+    <p><strong>Formule :</strong> ${formulaLabel}</p>
+
+    <hr style="margin:20px 0;" />
+
+    <h3>Description du projet</h3>
+
+    <p style="white-space:pre-line; color:#334155;">
+      ${description}
+    </p>
+
+    <hr style="margin:20px 0;" />
+
+    <p style="font-size:12px; color:#94a3b8;">
+      Planora — Demandes clients
+    </p>
+
+  </div>
+</div>
+`,
     });
 
-    return Response.json({ success: true, data });
+    return Response.json({ success: true });
   } catch (error) {
     return Response.json(
       { success: false, error: error.message },
