@@ -1,93 +1,63 @@
-import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { createClient } from "@supabase/supabase-js";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const supabase = createClient(
   "https://btschxgghvblmohddqcj.supabase.co",
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export async function GET() {
+export async function POST() {
   try {
-    const now = Date.now();
-    const tenMinutesAgo = new Date(now - 10 * 60 * 1000).toISOString();
-    const fiveDaysAgo = new Date(now - 5 * 24 * 60 * 60 * 1000).toISOString();
-
-    const { data: requests, error } = await supabase
+    const { data: requests } = await supabase
       .from("requests")
       .select("*")
       .eq("payment_status", "pending");
 
-    if (error) {
-      return Response.json({ success: false, error: error.message }, { status: 500 });
+    for (const req of requests || []) {
+      if (!req.email) continue;
+
+      await resend.emails.send({
+        from: "Planora <onboarding@resend.dev>",
+        to: [req.email],
+        subject: "Finalisez votre projet - Planora",
+        html: `
+<div style="font-family: Arial, sans-serif; background:#f8fafc; padding:20px;">
+  <div style="max-width:600px; margin:0 auto; background:white; border-radius:12px; padding:20px; text-align:center;">
+
+    <h2 style="color:#059669;">Votre projet vous attend</h2>
+
+    <p style="color:#475569;">
+      Bonjour ${req.full_name || ""},
+    </p>
+
+    <p style="color:#475569;">
+      Votre demande est toujours en attente. Finalisez votre choix pour recevoir vos plans personnalisés.
+    </p>
+
+    <a
+      href="https://planora.immo/offers?requestId=${req.id}"
+      style="display:inline-block; margin-top:20px; background:#059669; color:white; padding:10px 20px; border-radius:8px; text-decoration:none;"
+    >
+      Continuer mon projet
+    </a>
+
+    <p style="margin-top:20px; font-size:12px; color:#94a3b8;">
+      Planora — Conception de plans personnalisés
+    </p>
+
+  </div>
+</div>
+`,
+      });
     }
 
-    let firstReminderCount = 0;
-    let secondReminderCount = 0;
-
-    for (const request of requests || []) {
-      const createdAt = request.created_at;
-
-      const shouldSendFirstReminder =
-        !request.reminder_sent_at &&
-        createdAt <= tenMinutesAgo;
-
-      const shouldSendSecondReminder =
-        !request.second_reminder_sent_at &&
-        createdAt <= fiveDaysAgo;
-
-      if (shouldSendFirstReminder) {
-        await resend.emails.send({
-          from: "Plan Africa <onboarding@resend.dev>",
-          to: [request.email],
-          subject: "Finalisez votre demande Plan Africa",
-          html: `
-            <h2>Bonjour ${request.full_name || ""},</h2>
-            <p>Nous avons bien reçu votre demande de plan.</p>
-            <p>Vous pouvez maintenant choisir votre formule et finaliser votre paiement :</p>
-            <p><a href="https://planora.immo/offers?requestId=${request.id}">Voir les formules et finaliser</a></p>
-            <p>Bien à vous,<br/>Plan Africa</p>
-          `,
-        });
-
-        await supabase
-          .from("requests")
-          .update({ reminder_sent_at: new Date().toISOString() })
-          .eq("id", request.id);
-
-        firstReminderCount++;
-      }
-
-      if (shouldSendSecondReminder) {
-        await resend.emails.send({
-          from: "Plan Africa <onboarding@resend.dev>",
-          to: [request.email],
-          subject: "Dernière relance - finalisez votre demande Plan Africa",
-          html: `
-            <h2>Bonjour ${request.full_name || ""},</h2>
-            <p>Votre demande est toujours en attente de paiement.</p>
-            <p>Si vous souhaitez recevoir votre plan, vous pouvez finaliser votre commande ici :</p>
-            <p><a href="https://planora.immo/offers?requestId=${request.id}">Choisir une formule et payer</a></p>
-            <p>Bien à vous,<br/>Plan Africa</p>
-          `,
-        });
-
-        await supabase
-          .from("requests")
-          .update({ second_reminder_sent_at: new Date().toISOString() })
-          .eq("id", request.id);
-
-        secondReminderCount++;
-      }
-    }
-
-    return Response.json({
-      success: true,
-      firstReminderCount,
-      secondReminderCount,
-    });
+    return Response.json({ success: true });
   } catch (error) {
-    return Response.json({ success: false, error: error.message }, { status: 500 });
+    return Response.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
