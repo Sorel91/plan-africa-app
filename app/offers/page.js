@@ -76,11 +76,36 @@ export default function OffersPage() {
           </p>
         </div>
 
+        {/* RÉASSURANCE */}
+        <div className="mx-auto mt-8 max-w-5xl rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="grid gap-4 text-sm text-slate-600 sm:grid-cols-4">
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="font-semibold text-slate-900">Plans personnalisés</p>
+              <p className="mt-1">Adaptés à votre projet</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="font-semibold text-slate-900">Paiement sécurisé</p>
+              <p className="mt-1">Checkout Stripe</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="font-semibold text-slate-900">Livraison rapide</p>
+              <p className="mt-1">Selon la formule choisie</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="font-semibold text-slate-900">Modifications incluses</p>
+              <p className="mt-1">Confort et Premium</p>
+            </div>
+          </div>
+        </div>
+
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {/* ESSENTIEL */}
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
             <h3 className="text-xl font-semibold">{basic?.label || "Essentiel"}</h3>
             <p className="mt-2 text-3xl font-bold">{euro(basic?.amount)}</p>
+            <p className="mt-3 text-sm text-slate-600">
+              Pour explorer rapidement votre projet avec une première base claire.
+            </p>
 
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 2 propositions de plans</li>
@@ -103,13 +128,16 @@ export default function OffersPage() {
           </div>
 
           {/* CONFORT */}
-          <div className="rounded-3xl border-2 border-emerald-500 bg-white p-8 shadow-lg">
-            <div className="mb-2 text-xs font-semibold text-emerald-600">
-              ⭐ RECOMMANDÉ
+          <div className="relative rounded-3xl border-2 border-emerald-500 bg-white p-8 shadow-lg">
+            <div className="mb-2 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+              ⭐ Le meilleur compromis
             </div>
 
             <h3 className="text-xl font-semibold">{standard?.label || "Confort"}</h3>
             <p className="mt-2 text-3xl font-bold">{euro(standard?.amount)}</p>
+            <p className="mt-3 text-sm text-slate-600">
+              Pour obtenir une version plus aboutie, plus exploitable et ajustable.
+            </p>
 
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 3 propositions de plans</li>
@@ -136,6 +164,9 @@ export default function OffersPage() {
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
             <h3 className="text-xl font-semibold">{premium?.label || "Premium"}</h3>
             <p className="mt-2 text-3xl font-bold">{euro(premium?.amount)}</p>
+            <p className="mt-3 text-sm text-slate-600">
+              Pour un accompagnement plus poussé, plus flexible et prioritaire.
+            </p>
 
             <ul className="mt-6 space-y-2 text-sm text-slate-600">
               <li>✔ 3 propositions optimisées</li>
