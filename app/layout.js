@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Planora - Votre plan de maison à petit prix ",
-  description: "Application de demande de plans 2D et 3D",
+  title: "Planora — Visualisez votre maison avant de construire",
+  description: "Obtenez des plans personnalisés rapidement avec Planora.",
 };
 
 export default function RootLayout({ children }) {
@@ -34,6 +34,13 @@ export default function RootLayout({ children }) {
               </a>
 
               <a
+                href="/exemples"
+                className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+              >
+                Exemples
+              </a>
+
+              <a
                 href="/prix"
                 className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
               >
@@ -59,6 +66,9 @@ export default function RootLayout({ children }) {
             <div className="flex gap-4">
               <a href="/prix" className="hover:text-emerald-600">
                 Prix
+              </a>
+              <a href="/exemples" className="hover:text-emerald-600">
+                Exemples
               </a>
               <a href="/contact" className="hover:text-emerald-600">
                 Contact
