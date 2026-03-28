@@ -95,7 +95,7 @@ export default function DeliverablesPage() {
 
           <div className="rounded-3xl border bg-white p-4 shadow-sm">
             <img
-              src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c"
+              src="/images/checklist.png"
               alt="Checklist"
               className="rounded-2xl"
             />
