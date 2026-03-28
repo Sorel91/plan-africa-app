@@ -106,7 +106,7 @@ export default function DeliverablesPage() {
         <div className="mt-16 grid gap-8 lg:grid-cols-2 items-center">
           <div className="order-2 lg:order-1 rounded-3xl border bg-white p-4 shadow-sm">
             <img
-              src="/images/rendu_3D.jpg"
+              src="/images/Rendu_3D.jpg"
               alt="Rendu 3D"
               className="rounded-2xl"
             />
