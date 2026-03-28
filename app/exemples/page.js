@@ -106,26 +106,25 @@ export default function DeliverablesPage() {
         <div className="mt-16 grid gap-8 lg:grid-cols-2 items-center">
           <div className="order-2 lg:order-1 rounded-3xl border bg-white p-4 shadow-sm">
             <img
-              src="https://images.unsplash.com/photo-1497366216548-37526070297c"
-              alt="Variantes"
+              src="/images/rendu_3D.jpg"
+              alt="Rendu 3D"
               className="rounded-2xl"
             />
           </div>
 
           <div className="order-1 lg:order-2">
             <h2 className="text-2xl font-semibold">
-              Variantes de plans (selon formule)
+              Rendus 3D (selon formule)
             </h2>
 
             <p className="mt-3 text-slate-600">
-              Plusieurs propositions pour comparer et choisir la meilleure
-              configuration pour votre projet.
+              Plusieurs propositions 3D pour mieux visualiser votre projet.
             </p>
 
             <ul className="mt-4 space-y-2 text-sm text-slate-600">
-              <li>✔ Comparaison facile</li>
-              <li>✔ Ajustements possibles</li>
-              <li>✔ Vision plus complète</li>
+              <li>✔ Visualisation 3D réaliste </li>
+              <li>✔ Meilleure compréhension de l'espace</li>
+              <li>✔ Mise en perspective du mobilier et des ouvertures</li>
             </ul>
           </div>
         </div>
