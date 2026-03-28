@@ -39,7 +39,7 @@ export default function DeliverablesPage() {
 
           <div className="rounded-3xl border bg-white p-4 shadow-sm">
             <img
-              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+              src="/images/plan_2D.jpg"
               alt="Plan maison"
               className="rounded-2xl"
             />
