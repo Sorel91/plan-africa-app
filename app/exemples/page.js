@@ -50,7 +50,7 @@ export default function DeliverablesPage() {
         <div className="mt-16 grid gap-8 lg:grid-cols-2 items-center">
           <div className="order-2 lg:order-1 rounded-3xl border bg-white p-4 shadow-sm">
             <img
-              src="https://images.unsplash.com/photo-1503387762-592deb58ef4e"
+              src="images/plan_logique.jpg"
               alt="Organisation maison"
               className="rounded-2xl"
             />
