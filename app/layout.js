@@ -79,7 +79,6 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </footer>
-        <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-417498809">
 </script>
 <script>
