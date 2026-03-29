@@ -79,6 +79,16 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </footer>
+        <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-417498809">
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-417498809');
+</script>
       </body>
     </html>
   );
