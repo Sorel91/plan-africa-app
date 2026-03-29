@@ -58,6 +58,13 @@ export default function RootLayout({ children }) {
                 </a>
 
                 <a
+                  href="/temoignage"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                >
+                  Temoignages
+                </a>
+
+                <a
                   href="/prix"
                   className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
                 >
@@ -89,6 +96,9 @@ export default function RootLayout({ children }) {
               </a>
               <a href="/exemples" className="hover:text-emerald-600">
                 Exemples
+              </a>
+              <a href="/temoignage" className="hover:text-emerald-600">
+                Temoignages
               </a>
               <a href="/contact" className="hover:text-emerald-600">
                 Contact

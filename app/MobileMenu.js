@@ -27,6 +27,12 @@ const links = [
       "rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50",
   },
   {
+    href: "/temoignage",
+    label: "Temoignages",
+    className:
+      "rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50",
+  },
+  {
     href: "/contact",
     label: "Contact",
     className:
