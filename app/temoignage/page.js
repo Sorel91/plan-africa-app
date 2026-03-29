@@ -1,8 +1,7 @@
 const testimonials = [
   {
     name: "Amina T.",
-    photo:
-      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Amina&skinColor=8d5524",
+    photo: "https://randomuser.me/api/portraits/women/58.jpg",
     city: "Dakar, Senegal",
     project: "Maison familiale R+1",
     quote:
@@ -10,8 +9,7 @@ const testimonials = [
   },
   {
     name: "Koffi A.",
-    photo:
-      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Koffi&skinColor=8d5524",
+    photo: "https://randomuser.me/api/portraits/men/75.jpg",
     city: "Abidjan, Cote d'Ivoire",
     project: "Villa 3 chambres",
     quote:
@@ -19,8 +17,7 @@ const testimonials = [
   },
   {
     name: "Nadia B.",
-    photo:
-      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Nadia&skinColor=f2d3b1",
+    photo: "https://randomuser.me/api/portraits/women/44.jpg",
     city: "Casablanca, Maroc",
     project: "Extension d'une maison existante",
     quote:
@@ -28,8 +25,7 @@ const testimonials = [
   },
   {
     name: "Serigne M.",
-    photo:
-      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Serigne&skinColor=8d5524",
+    photo: "https://randomuser.me/api/portraits/men/53.jpg",
     city: "Bamako, Mali",
     project: "Duplex moderne",
     quote:
@@ -37,8 +33,7 @@ const testimonials = [
   },
   {
     name: "Ruth N.",
-    photo:
-      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Ruth&skinColor=8d5524",
+    photo: "https://randomuser.me/api/portraits/women/67.jpg",
     city: "Lome, Togo",
     project: "Maison compacte 2 chambres",
     quote:
@@ -46,8 +41,7 @@ const testimonials = [
   },
   {
     name: "Yassine K.",
-    photo:
-      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Yassine&skinColor=f2d3b1",
+    photo: "https://randomuser.me/api/portraits/men/32.jpg",
     city: "Tunis, Tunisie",
     project: "Plan pour investissement locatif",
     quote:
