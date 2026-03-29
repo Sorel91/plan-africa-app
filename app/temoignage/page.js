@@ -1,7 +1,8 @@
 const testimonials = [
   {
     name: "Amina T.",
-    photo: "https://randomuser.me/api/portraits/women/58.jpg",
+    photo:
+      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Dakar, Senegal",
     project: "Maison familiale R+1",
     quote:
@@ -9,7 +10,8 @@ const testimonials = [
   },
   {
     name: "Koffi A.",
-    photo: "https://randomuser.me/api/portraits/men/75.jpg",
+    photo:
+      "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Abidjan, Cote d'Ivoire",
     project: "Villa 3 chambres",
     quote:
@@ -17,7 +19,8 @@ const testimonials = [
   },
   {
     name: "Nadia B.",
-    photo: "https://randomuser.me/api/portraits/women/44.jpg",
+    photo:
+      "https://images.pexels.com/photos/1468379/pexels-photo-1468379.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Casablanca, Maroc",
     project: "Extension d'une maison existante",
     quote:
@@ -25,7 +28,8 @@ const testimonials = [
   },
   {
     name: "Serigne M.",
-    photo: "https://randomuser.me/api/portraits/men/53.jpg",
+    photo:
+      "https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Bamako, Mali",
     project: "Duplex moderne",
     quote:
@@ -33,7 +37,8 @@ const testimonials = [
   },
   {
     name: "Ruth N.",
-    photo: "https://randomuser.me/api/portraits/women/67.jpg",
+    photo:
+      "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Lome, Togo",
     project: "Maison compacte 2 chambres",
     quote:
@@ -41,7 +46,8 @@ const testimonials = [
   },
   {
     name: "Yassine K.",
-    photo: "https://randomuser.me/api/portraits/men/32.jpg",
+    photo:
+      "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Tunis, Tunisie",
     project: "Plan pour investissement locatif",
     quote:
