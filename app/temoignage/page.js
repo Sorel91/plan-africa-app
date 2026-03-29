@@ -1,7 +1,8 @@
 const testimonials = [
   {
     name: "Amina T.",
-    photo: "https://i.pravatar.cc/120?img=47",
+    photo:
+      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Amina&skinColor=8d5524",
     city: "Dakar, Senegal",
     project: "Maison familiale R+1",
     quote:
@@ -9,7 +10,8 @@ const testimonials = [
   },
   {
     name: "Koffi A.",
-    photo: "https://i.pravatar.cc/120?img=12",
+    photo:
+      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Koffi&skinColor=8d5524",
     city: "Abidjan, Cote d'Ivoire",
     project: "Villa 3 chambres",
     quote:
@@ -17,7 +19,8 @@ const testimonials = [
   },
   {
     name: "Nadia B.",
-    photo: "https://i.pravatar.cc/120?img=5",
+    photo:
+      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Nadia&skinColor=f2d3b1",
     city: "Casablanca, Maroc",
     project: "Extension d'une maison existante",
     quote:
@@ -25,7 +28,8 @@ const testimonials = [
   },
   {
     name: "Serigne M.",
-    photo: "https://i.pravatar.cc/120?img=59",
+    photo:
+      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Serigne&skinColor=8d5524",
     city: "Bamako, Mali",
     project: "Duplex moderne",
     quote:
@@ -33,7 +37,8 @@ const testimonials = [
   },
   {
     name: "Ruth N.",
-    photo: "https://i.pravatar.cc/120?img=32",
+    photo:
+      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Ruth&skinColor=8d5524",
     city: "Lome, Togo",
     project: "Maison compacte 2 chambres",
     quote:
@@ -41,7 +46,8 @@ const testimonials = [
   },
   {
     name: "Yassine K.",
-    photo: "https://i.pravatar.cc/120?img=67",
+    photo:
+      "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Yassine&skinColor=f2d3b1",
     city: "Tunis, Tunisie",
     project: "Plan pour investissement locatif",
     quote:
@@ -59,7 +65,7 @@ export default function TemoignagePage() {
           </span>
 
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-            Ils ont fait confiance a Planor
+            Ils ont fait confiance à Planora
           </h1>
 
           <p className="mt-4 text-lg text-slate-600">
