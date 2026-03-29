@@ -70,34 +70,34 @@ export default function RootLayout({ children }) {
               </nav>
             </div>
 
-            <nav className="mt-3 flex gap-2 overflow-x-auto pb-1 md:hidden">
+            <nav className="mt-3 grid grid-cols-2 gap-2 md:hidden">
+              <a
+                href="/prix"
+                className="col-span-2 rounded-full bg-emerald-600 px-3 py-2 text-center text-sm font-semibold text-white"
+              >
+                Voir les prix
+              </a>
               <a
                 href="/"
-                className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700"
+                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-center text-sm font-medium text-slate-700"
               >
                 Accueil
               </a>
               <a
                 href="/comment-ca-marche"
-                className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700"
+                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-center text-sm font-medium text-slate-700"
               >
                 Comment ça marche
               </a>
               <a
                 href="/exemples"
-                className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700"
+                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-center text-sm font-medium text-slate-700"
               >
                 Exemples
               </a>
               <a
-                href="/prix"
-                className="whitespace-nowrap rounded-full bg-emerald-600 px-3 py-2 text-sm font-semibold text-white"
-              >
-                Voir les prix
-              </a>
-              <a
                 href="/contact"
-                className="whitespace-nowrap rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700"
+                className="rounded-full border border-slate-300 bg-white px-3 py-2 text-center text-sm font-medium text-slate-700"
               >
                 Contact
               </a>
