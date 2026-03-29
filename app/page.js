@@ -145,17 +145,17 @@ export default function Home() {
               Recevez plusieurs propositions de plans personnalisés adaptées à votre projet.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
               <a
                 href="/prix"
-                className="rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white shadow-sm hover:bg-emerald-700"
+                className="block rounded-xl bg-emerald-600 px-3 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 sm:px-6 sm:text-base"
               >
                 Voir les prix
               </a>
 
               <a
                 href="/comment-ca-marche"
-                className="rounded-xl border border-slate-300 px-6 py-3 font-medium text-slate-700 hover:border-emerald-600 hover:text-emerald-700"
+                className="block rounded-xl border border-slate-300 px-3 py-3 text-center text-sm font-medium text-slate-700 hover:border-emerald-600 hover:text-emerald-700 sm:px-6 sm:text-base"
               >
                 Comment ça marche
               </a>
