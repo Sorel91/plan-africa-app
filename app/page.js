@@ -62,6 +62,15 @@ export default function Home() {
         requestId: data.id,
         formula: selectedFormula || null,
       });
+
+      if (typeof window !== "undefined" && typeof window.gtag === "function") {
+        window.gtag("event", "generate_lead", {
+          form_name: "home_project_form",
+          page_path: "/",
+          request_id: data.id,
+          formula: selectedFormula || "none",
+        });
+      }
     } catch (e) {
       console.error("Tracking error", e);
     }
