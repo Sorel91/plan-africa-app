@@ -1,8 +1,6 @@
 const testimonials = [
   {
     name: "Amina T.",
-    photo:
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Dakar, Senegal",
     project: "Maison familiale R+1",
     quote:
@@ -10,8 +8,6 @@ const testimonials = [
   },
   {
     name: "Koffi A.",
-    photo:
-      "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Abidjan, Cote d'Ivoire",
     project: "Villa 3 chambres",
     quote:
@@ -19,8 +15,6 @@ const testimonials = [
   },
   {
     name: "Nadia B.",
-    photo:
-      "https://images.pexels.com/photos/1468379/pexels-photo-1468379.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Casablanca, Maroc",
     project: "Extension d'une maison existante",
     quote:
@@ -28,8 +22,6 @@ const testimonials = [
   },
   {
     name: "Serigne M.",
-    photo:
-      "https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Bamako, Mali",
     project: "Duplex moderne",
     quote:
@@ -37,8 +29,6 @@ const testimonials = [
   },
   {
     name: "Ruth N.",
-    photo:
-      "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Lome, Togo",
     project: "Maison compacte 2 chambres",
     quote:
@@ -46,8 +36,6 @@ const testimonials = [
   },
   {
     name: "Yassine K.",
-    photo:
-      "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     city: "Tunis, Tunisie",
     project: "Plan pour investissement locatif",
     quote:
@@ -80,22 +68,11 @@ export default function TemoignagePage() {
               key={`${item.name}-${item.city}`}
               className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
             >
-              <div className="mb-4 flex items-center gap-3">
-                <img
-                  src={item.photo}
-                  alt={`Photo de ${item.name}`}
-                  className="h-12 w-12 rounded-full object-cover"
-                  loading="lazy"
-                />
-                <div>
-                  <p className="font-semibold text-slate-900">{item.name}</p>
-                  <p className="text-sm text-slate-600">{item.city}</p>
-                </div>
-              </div>
-
               <p className="text-sm leading-6 text-slate-700">"{item.quote}"</p>
 
               <div className="mt-5 border-t border-slate-100 pt-4">
+                <p className="font-semibold text-slate-900">{item.name}</p>
+                <p className="text-sm text-slate-600">{item.city}</p>
                 <p className="mt-1 text-sm text-emerald-700">{item.project}</p>
               </div>
             </article>
