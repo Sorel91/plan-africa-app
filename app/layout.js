@@ -23,46 +23,81 @@ export default function RootLayout({ children }) {
           `}
         </Script>
         <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8">
-            <a
-              href="/"
-              className="text-lg font-bold tracking-tight text-slate-900"
-            >
-              Planora
-            </a>
-
-            <nav className="hidden items-center gap-3 md:flex">
+          <div className="mx-auto max-w-6xl px-6 py-4 lg:px-8">
+            <div className="flex items-center justify-between">
               <a
                 href="/"
-                className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                className="text-lg font-bold tracking-tight text-slate-900"
+              >
+                Planora
+              </a>
+
+              <nav className="hidden items-center gap-3 md:flex">
+                <a
+                  href="/"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                >
+                  Accueil
+                </a>
+
+                <a
+                  href="/comment-ca-marche"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                >
+                  Comment ça marche
+                </a>
+
+                <a
+                  href="/exemples"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                >
+                  Exemples
+                </a>
+
+                <a
+                  href="/prix"
+                  className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                >
+                  Voir les prix
+                </a>
+
+                <a
+                  href="/contact"
+                  className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-emerald-600 hover:text-emerald-700"
+                >
+                  Contact
+                </a>
+              </nav>
+            </div>
+
+            <nav className="mt-3 flex gap-2 overflow-x-auto pb-1 md:hidden">
+              <a
+                href="/"
+                className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700"
               >
                 Accueil
               </a>
-
               <a
                 href="/comment-ca-marche"
-                className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700"
               >
                 Comment ça marche
               </a>
-
               <a
                 href="/exemples"
-                className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-emerald-700"
+                className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700"
               >
                 Exemples
               </a>
-
               <a
                 href="/prix"
-                className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                className="whitespace-nowrap rounded-full bg-emerald-600 px-3 py-2 text-sm font-semibold text-white"
               >
                 Voir les prix
               </a>
-
               <a
                 href="/contact"
-                className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-emerald-600 hover:text-emerald-700"
+                className="whitespace-nowrap rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700"
               >
                 Contact
               </a>
