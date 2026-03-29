@@ -161,7 +161,7 @@ export default function Home() {
               </a>
             </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="mt-8 hidden gap-4 sm:grid-cols-3 md:grid">
               <div className="rounded-2xl border bg-white p-4 shadow-sm">
                 <p className="text-sm font-semibold">Rapide</p>
                 <p className="mt-1 text-sm text-slate-600">Livraison en 24h à 48h</p>
@@ -179,7 +179,7 @@ export default function Home() {
             </div>
 
             {/* NOUVEAU BLOC POUR POUSSER VERS /PRIX */}
-            <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mt-10 hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:block">
               <h2 className="text-xl font-semibold text-slate-900">
                 Comparez les formules avant de commencer
               </h2>
