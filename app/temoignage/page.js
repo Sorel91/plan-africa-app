@@ -1,6 +1,7 @@
 const testimonials = [
   {
     name: "Amina T.",
+    photo: "https://i.pravatar.cc/120?img=47",
     city: "Dakar, Senegal",
     project: "Maison familiale R+1",
     quote:
@@ -8,6 +9,7 @@ const testimonials = [
   },
   {
     name: "Koffi A.",
+    photo: "https://i.pravatar.cc/120?img=12",
     city: "Abidjan, Cote d'Ivoire",
     project: "Villa 3 chambres",
     quote:
@@ -15,6 +17,7 @@ const testimonials = [
   },
   {
     name: "Nadia B.",
+    photo: "https://i.pravatar.cc/120?img=5",
     city: "Casablanca, Maroc",
     project: "Extension d'une maison existante",
     quote:
@@ -22,6 +25,7 @@ const testimonials = [
   },
   {
     name: "Serigne M.",
+    photo: "https://i.pravatar.cc/120?img=59",
     city: "Bamako, Mali",
     project: "Duplex moderne",
     quote:
@@ -29,6 +33,7 @@ const testimonials = [
   },
   {
     name: "Ruth N.",
+    photo: "https://i.pravatar.cc/120?img=32",
     city: "Lome, Togo",
     project: "Maison compacte 2 chambres",
     quote:
@@ -36,6 +41,7 @@ const testimonials = [
   },
   {
     name: "Yassine K.",
+    photo: "https://i.pravatar.cc/120?img=67",
     city: "Tunis, Tunisie",
     project: "Plan pour investissement locatif",
     quote:
@@ -53,7 +59,7 @@ export default function TemoignagePage() {
           </span>
 
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-            Ils ont avance avec Planora
+            Ils ont fait confiance a Planor
           </h1>
 
           <p className="mt-4 text-lg text-slate-600">
@@ -68,11 +74,22 @@ export default function TemoignagePage() {
               key={`${item.name}-${item.city}`}
               className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
             >
+              <div className="mb-4 flex items-center gap-3">
+                <img
+                  src={item.photo}
+                  alt={`Photo de ${item.name}`}
+                  className="h-12 w-12 rounded-full object-cover"
+                  loading="lazy"
+                />
+                <div>
+                  <p className="font-semibold text-slate-900">{item.name}</p>
+                  <p className="text-sm text-slate-600">{item.city}</p>
+                </div>
+              </div>
+
               <p className="text-sm leading-6 text-slate-700">"{item.quote}"</p>
 
               <div className="mt-5 border-t border-slate-100 pt-4">
-                <p className="font-semibold text-slate-900">{item.name}</p>
-                <p className="text-sm text-slate-600">{item.city}</p>
                 <p className="mt-1 text-sm text-emerald-700">{item.project}</p>
               </div>
             </article>
