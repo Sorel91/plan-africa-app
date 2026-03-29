@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 
 export const metadata = {
   title: "Planora — Visualisez votre maison avant de construire",
@@ -9,6 +10,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-417498809"
+          strategy="afterInteractive"
+        />
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-417498809');
+          `}
+        </Script>
         <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8">
             <a
@@ -79,7 +92,6 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </footer>
-
       </body>
     </html>
   );
