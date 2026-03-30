@@ -7,7 +7,7 @@ export async function POST(request) {
     const { name, email, message } = await request.json();
 
     const data = await resend.emails.send({
-      from: "Plan Africa <onboarding@resend.dev>",
+      from: "Plan Africa <contact@planora.immo>",
       to: ["beydi.sangare@gmail.com"], // ← remplace par ton email perso
       subject: "Nouveau message contact",
       html: `

@@ -26,7 +26,7 @@ export async function POST(request) {
         : "Non sélectionnée";
 
     await resend.emails.send({
-      from: "Planora <onboarding@resend.dev>",
+      from: "Planora <contact@planora.immo>",
       to: ["Beydi.sangare@gmail.com"],
 
       subject: "Nouvelle demande client - Planora",
