@@ -27,7 +27,7 @@ export async function POST(request) {
 
     await resend.emails.send({
       from: "Planora <contact@planora.immo>",
-      to: ["Beydi.sangare@gmail.com"],
+      to: ["beydi.sangare.gmail.com"], // ← remplace par ton email perso
 
       subject: "Nouvelle demande client - Planora",
 
