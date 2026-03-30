@@ -24,7 +24,7 @@ export async function POST(request) {
 
     await resend.emails.send({
       from: "Planora <contact@planora.immo>",
-      reply_to: "beydi.sangare@gmail.com",
+      reply_to: "contact@lexoigeakr.resend.app",
       to: [req.email],
       subject: "Votre projet avance - Planora",
       html: `
