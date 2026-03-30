@@ -93,6 +93,7 @@ export async function POST(request) {
     if (existingRequest.email) {
       await resend.emails.send({
         from: "Planora <contact@planora.immo>",
+        reply_to: "beydi.sangare@gmail.com",
         to: [existingRequest.email],
         subject: "Paiement confirmé - Planora",
         html: `

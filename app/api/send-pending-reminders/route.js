@@ -43,6 +43,7 @@ export async function GET() {
       if (shouldSendFirstReminder) {
         await resend.emails.send({
           from: "Planora <contact@planora.immo>",
+          reply_to: "beydi.sangare@gmail.com",
           to: [req.email],
           subject: "Finalisez votre projet - Planora",
           html: `
@@ -90,6 +91,7 @@ export async function GET() {
       if (shouldSendSecondReminder) {
         await resend.emails.send({
           from: "Planora <contact@planora.immo>",
+          reply_to: "beydi.sangare@gmail.com",
           to: [req.email],
           subject: "Dernière relance - Finalisez votre projet Planora",
           html: `
