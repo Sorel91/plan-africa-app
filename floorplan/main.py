@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from floorplan.generator import FloorplanGeneratorV5
+try:
+    from floorplan.generator import FloorplanGeneratorV5
+except ModuleNotFoundError:
+    from generator import FloorplanGeneratorV5
 
 
 def _room_summary(areas: dict[str, int], zones: dict[str, int]) -> str:
