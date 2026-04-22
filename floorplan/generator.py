@@ -187,7 +187,7 @@ class FloorplanGeneratorV5:
                 model.Add(cy2[room_name] <= 2 * y_max).OnlyEnforceIf(inside)
 
         # Basic area / room quality rules.
-        total_area = model.NewIntVar(width_limit * height_limit, width_limit * height_limit, "total_area")
+        total_area = model.NewIntVar(63, 123, "total_area")
         model.Add(total_area == sum(area.values()))
         model.Add(area["living"] >= area["kitchen"] + 6)
         for bedroom in ["bedroom_1", "bedroom_2", "bedroom_3"]:

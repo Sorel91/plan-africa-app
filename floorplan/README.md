@@ -7,7 +7,6 @@ Cette version applique une modélisation OR-Tools plus proche d'un problème de 
 - Ajout d'un vrai placement géométrique avec variables `(x, y, w, h)`.
 - `area = w * h` via `AddMultiplicationEquality`.
 - Non-chevauchement robuste avec `AddNoOverlap2D`.
-- Utilisation complète de l'enveloppe 12x12 : la somme des surfaces des pièces est forcée à 144 m² (aucun espace libre).
 - Les centres des pièces sont ancrés dans des zones fonctionnelles (jour / nuit / service).
 - Scoring structuré en sous-scores :
   - `compactness`
