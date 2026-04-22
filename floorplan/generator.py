@@ -188,10 +188,20 @@ class FloorplanGenerator:
             model.Add(bdist == bdx + bdy)
             bedroom_living_distances.append(bdist)
 
-        total_area = sum(rv["area"] for rv in room_vars)
-        compactness_penalty = sum(rv["diff"] for rv in room_vars)
-        bedroom_cluster_distance = sum(bed_pair_distances) if bed_pair_distances else 0
-        bedroom_living_separation = sum(bedroom_living_distances)
+        total_area = model.NewIntVar(0, 10000, "total_area")
+        model.Add(total_area == sum(rv["area"] for rv in room_vars))
+
+        compactness_penalty = model.NewIntVar(0, 10000, "compactness_penalty")
+        model.Add(compactness_penalty == sum(rv["diff"] for rv in room_vars))
+
+        bedroom_cluster_distance = model.NewIntVar(0, 10000, "bedroom_cluster_distance")
+        if bed_pair_distances:
+            model.Add(bedroom_cluster_distance == sum(bed_pair_distances))
+        else:
+            model.Add(bedroom_cluster_distance == 0)
+
+        bedroom_living_separation = model.NewIntVar(0, 10000, "bedroom_living_separation")
+        model.Add(bedroom_living_separation == sum(bedroom_living_distances))
 
         weights = mode["weights"]
         objective = (
@@ -270,7 +280,7 @@ class FloorplanGenerator:
             score = solver.ObjectiveValue()
             metric_values = {}
             for key, expr in metrics.items():
-                metric_values[key] = solver.Value(expr) if hasattr(expr, "Index") else int(expr)
+                metric_values[key] = solver.Value(expr)
 
             variants.append(
                 FloorplanVariant(
