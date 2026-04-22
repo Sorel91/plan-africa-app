@@ -41,6 +41,8 @@ ZONE_NEIGHBORS: Dict[int, List[int]] = {
 
 MODE_WEIGHTS = {
     "balanced": {
+        "fill": 14,
+        "empty_area": -22,
         "compactness": 3,
         "zoning": 4,
         "living_dominance": 4,
@@ -55,6 +57,8 @@ MODE_WEIGHTS = {
         "diversity": 8,
     },
     "strict_connectivity": {
+        "fill": 12,
+        "empty_area": -20,
         "compactness": 2,
         "zoning": 3,
         "living_dominance": 4,
@@ -69,6 +73,8 @@ MODE_WEIGHTS = {
         "diversity": 7,
     },
     "zoning_first": {
+        "fill": 13,
+        "empty_area": -21,
         "compactness": 3,
         "zoning": 10,
         "living_dominance": 5,
@@ -113,6 +119,7 @@ class FloorplanGeneratorV5:
 
         width_limit = 12
         height_limit = 12
+        building_area = width_limit * height_limit
 
         area: Dict[str, cp_model.IntVar] = {}
         zone: Dict[str, cp_model.IntVar] = {}
@@ -177,8 +184,12 @@ class FloorplanGeneratorV5:
                 model.Add(cy2[room_name] >= 2 * y_min).OnlyEnforceIf(inside)
                 model.Add(cy2[room_name] <= 2 * y_max).OnlyEnforceIf(inside)
 
-        total_area = model.NewIntVar(63, 123, "total_area")
+        total_area = model.NewIntVar(63, building_area, "total_area")
         model.Add(total_area == sum(area.values()))
+        empty_area = model.NewIntVar(0, building_area, "empty_area")
+        model.Add(empty_area == building_area - total_area)
+        model.Add(total_area >= 108)
+
         model.Add(area["living"] >= area["kitchen"] + 6)
         for bedroom in ["bedroom_1", "bedroom_2", "bedroom_3"]:
             model.Add(area["living"] >= area[bedroom] + 4)
@@ -260,8 +271,8 @@ class FloorplanGeneratorV5:
 
         used_zone_count = model.NewIntVar(1, len(ZONES), "used_zone_count")
         model.Add(used_zone_count == sum(zone_used.values()))
-        compactness_score = model.NewIntVar(0, len(ZONES), "compactness_score")
-        model.Add(compactness_score == len(ZONES) - used_zone_count)
+        compactness_score = model.NewIntVar(0, building_area + len(ZONES), "compactness_score")
+        model.Add(compactness_score == total_area + (len(ZONES) - used_zone_count) * 4)
 
         kitchen_living_adj = pair_var(adjacency, "kitchen", "living")
         kitchen_living_prox = pair_var(proximity, "kitchen", "living")
@@ -377,10 +388,12 @@ class FloorplanGeneratorV5:
             model.Add(same_zone_count == sum(same_flags))
             model.Add(same_zone_count <= len(ROOMS) - 2)
 
-        score = model.NewIntVar(-2000, 4000, "score")
+        score = model.NewIntVar(-10000, 10000, "score")
         model.Add(
             score
-            == weights["compactness"] * compactness_score
+            == weights["fill"] * total_area
+            + weights["empty_area"] * empty_area
+            + weights["compactness"] * compactness_score
             + weights["zoning"] * zoning_score
             + weights["living_dominance"] * area["living"]
             + weights["kitchen_living"] * kitchen_living_adj
@@ -433,6 +446,7 @@ class FloorplanGeneratorV5:
         svg_path = self._export_svg(mode, rank, room_rectangles, room_areas)
 
         sub_scores = {
+            "fill": solver.Value(total_area),
             "compactness": solver.Value(compactness_score),
             "zoning": solver.Value(zoning_score),
             "connectivity": solver.Value(connectivity_score),
@@ -440,6 +454,8 @@ class FloorplanGeneratorV5:
         }
 
         metrics = {
+            "occupied_area": solver.Value(total_area),
+            "empty_area": solver.Value(empty_area),
             "isolated_bedrooms": solver.Value(isolated_bedrooms),
             "connected_bedrooms": solver.Value(connected_bedrooms),
             "kitchen_connected_to_living": solver.Value(kitchen_connected_to_living),
@@ -492,9 +508,9 @@ class FloorplanGeneratorV5:
         svg_parts = [
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_width}" height="{svg_height}" viewBox="0 0 {svg_width} {svg_height}">',
             '<rect x="0" y="0" width="100%" height="100%" fill="#f8fafc"/>',
-            f'<rect x="{margin}" y="{margin}" width="{12 * scale}" height="{12 * scale}" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>',
-            f'<text x="{margin}" y="{margin - 2 + 18}" font-family="Arial" font-size="18" font-weight="bold" fill="#0f172a">Floorplan V5</text>',
-            f'<text x="{margin + 126}" y="{margin - 2 + 18}" font-family="Arial" font-size="14" fill="#475569">{mode} #{rank}</text>',
+            f'<rect x="{margin}" y="{margin + header_height}" width="{12 * scale}" height="{12 * scale}" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>',
+            f'<text x="{margin}" y="{margin + 18}" font-family="Arial" font-size="18" font-weight="bold" fill="#0f172a">Floorplan V5</text>',
+            f'<text x="{margin + 126}" y="{margin + 18}" font-family="Arial" font-size="14" fill="#475569">{mode} #{rank}</text>',
         ]
 
         zone_offset_y = margin + header_height
@@ -504,10 +520,10 @@ class FloorplanGeneratorV5:
             zx, zy = int(z["x"] * scale) + zone_offset_x, int(z["y"] * scale) + zone_offset_y
             zw, zh = int(z["w"] * scale), int(z["h"] * scale)
             svg_parts.append(
-                f'<rect x="{zx}" y="{zy}" width="{zw}" height="{zh}" fill="none" stroke="{zone_stroke}" stroke-width="1" stroke-dasharray="6 5" opacity="0.55"/>'
+                f'<rect x="{zx}" y="{zy}" width="{zw}" height="{zh}" fill="none" stroke="{zone_stroke}" stroke-width="1" stroke-dasharray="6 5" opacity="0.45"/>'
             )
             svg_parts.append(
-                f'<text x="{zx + 8}" y="{zy + 18}" font-family="Arial" font-size="11" fill="{zone_label}" opacity="0.7">Z{zone_id} ({z["tag"]})</text>'
+                f'<text x="{zx + 8}" y="{zy + 18}" font-family="Arial" font-size="11" fill="{zone_label}" opacity="0.6">Z{zone_id} ({z["tag"]})</text>'
             )
 
         for room_name, rect in room_rectangles.items():
@@ -529,7 +545,7 @@ class FloorplanGeneratorV5:
             badge_y = ry + 6
 
             svg_parts.append(
-                f'<rect x="{badge_x}" y="{badge_y}" width="{badge_width}" height="{badge_height}" rx="4" fill="#ffffff" fill-opacity="0.78" stroke="none"/>'
+                f'<rect x="{badge_x}" y="{badge_y}" width="{badge_width}" height="{badge_height}" rx="4" fill="#ffffff" fill-opacity="0.82" stroke="none"/>'
             )
             svg_parts.append(
                 f'<text x="{badge_x + 8}" y="{badge_y + 16}" font-family="Arial" font-size="{font_size}" font-weight="600" fill="{text_color}">{label}</text>'
