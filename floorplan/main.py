@@ -9,15 +9,23 @@ rooms = [
 ]
 
 generator = FloorplanGenerator(10, 10, rooms, grid_step=0.5)
-plan = generator.generate()
+variants = generator.generate_variants(count=5)
 
-print(f"Building: {plan.width}m x {plan.height}m")
-for room in plan.rooms:
-    print(
-        f"{room.name} | type={room.room_type} | "
-        f"x={room.x:.1f}, y={room.y:.1f}, w={room.w:.1f}, h={room.h:.1f}, area={room.w * room.h:.1f}m²"
+for variant in variants:
+    print(f"\nVariant {variant.index} | score={variant.score:.1f}")
+    print(f"Building: {variant.floorplan.width}m x {variant.floorplan.height}m")
+
+    for room in variant.floorplan.rooms:
+        area = room.w * room.h
+        print(
+            f"- {room.name} | type={room.room_type} | "
+            f"x={room.x:.1f}, y={room.y:.1f}, w={room.w:.1f}, h={room.h:.1f}, area={area:.1f}m²"
+        )
+
+    output_svg = f"floorplan/output_{variant.index}.svg"
+    export_floorplan_svg(
+        variant.floorplan,
+        output_svg,
+        title=f"Variant {variant.index} - score {variant.score:.1f}",
     )
-
-output_svg = "floorplan/output.svg"
-export_floorplan_svg(plan, output_svg)
-print(f"SVG exported: {output_svg}")
+    print(f"SVG exported: {output_svg}")
