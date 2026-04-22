@@ -1,23 +1,24 @@
-# Floorplan V5
+# Floorplan V5 (connectivité / habitabilité)
 
-Refonte complète de la V5 orientée **connectivité** et **habitabilité**.
+Cette version V5 met l'accent sur la connectivité implicite via OR-Tools CP-SAT.
 
-## Principes
+## Nouveautés principales
 
-- Génération de variantes CP-SAT par mode (`balanced`, `strict_connectivity`, `zoning_first`).
-- Renforcement fort de la liaison **cuisine ↔ salon**.
-- Connectivité explicite des chambres (adjacence entre chambres, non-isolement).
-- Logique de circulation implicite (accès plausible à la zone de vie sans couloir dessiné).
-- Scoring global qui conserve aussi compacité, zoning et dominance du salon.
+- Connexion cuisine ↔ salon fortement pondérée dans le scoring.
+- En mode `strict_connectivity`, la cuisine connectée au salon est imposée.
+- Gestion de l'isolement des chambres via booléens d'adjacence.
+- Bonus de groupe des chambres (cluster) et malus chambres isolées.
+- Première logique de circulation implicite via accès plausible à la zone de vie.
+- Ajout de métriques explicites :
+  - `isolated_bedrooms`
+  - `connected_bedrooms`
+  - `kitchen_connected_to_living`
+  - `connectivity_score`
 
-## Métriques V5
+## Robustesse OR-Tools
 
-- `isolated_bedrooms`
-- `connected_bedrooms`
-- `kitchen_connected_to_living`
-- `connectivity_score`
-
-Toutes les métriques agrégées sont matérialisées dans des `IntVar` dédiées avant lecture via `solver.Value(...)`.
+Les sommes destinées aux métriques sont stockées dans des `IntVar` agrégées via `model.Add(...)`.
+Aucune conversion risquée du type `int(expr)` n'est utilisée sur des expressions OR-Tools.
 
 ## Exécution
 
@@ -25,4 +26,4 @@ Toutes les métriques agrégées sont matérialisées dans des `IntVar` dédiée
 python -m floorplan.main
 ```
 
-Les SVG sont exportés dans `floorplan/out/`.
+Les variantes SVG sont générées dans `floorplan/out/`.
