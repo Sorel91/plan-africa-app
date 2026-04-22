@@ -347,20 +347,38 @@ class FloorplanGenerator:
         living_center_distance = model.NewIntVar(0, (self.width + self.height) * 2, "living_center_distance")
         model.Add(living_center_distance == living_center_dx + living_center_dy)
 
+        bedroom_living_adjacent_count = model.NewIntVar(0, len(bedroom_living_adjacencies), "bedroom_living_adjacent_count")
+        model.Add(bedroom_living_adjacent_count == sum(bedroom_living_adjacencies))
+
+        bedroom_kitchen_adjacent_count = model.NewIntVar(0, len(bedroom_kitchen_adjacencies), "bedroom_kitchen_adjacent_count")
+        model.Add(bedroom_kitchen_adjacent_count == sum(bedroom_kitchen_adjacencies))
+
+        bedroom_half_bonus_count = model.NewIntVar(0, len(bedroom_half_bonus_terms), "bedroom_half_bonus_count")
+        model.Add(bedroom_half_bonus_count == sum(bedroom_half_bonus_terms))
+
+        thin_penalty_count = model.NewIntVar(0, len(thin_penalties), "thin_penalty_count")
+        model.Add(thin_penalty_count == sum(thin_penalties))
+
+        bedroom_compact_bonus_count = model.NewIntVar(0, len(bedroom_compact_bonus_terms), "bedroom_compact_bonus_count")
+        model.Add(bedroom_compact_bonus_count == sum(bedroom_compact_bonus_terms))
+
+        bedroom_cluster_bonus_count = model.NewIntVar(0, len(bedroom_cluster_terms), "bedroom_cluster_bonus_count")
+        model.Add(bedroom_cluster_bonus_count == sum(bedroom_cluster_terms))
+
         weights = mode["weights"]
         objective = (
             22 * total_area
             - weights["compact"] * compactness_penalty
-            - 24 * sum(thin_penalties)
-            + 7 * sum(bedroom_compact_bonus_terms)
+            - 24 * thin_penalty_count
+            + 7 * bedroom_compact_bonus_count
             - weights["kitchen_near"] * kitchen_living_distance
             - weights["bed_cluster"] * bedroom_cluster_distance
             + weights["bed_living_sep"] * bedroom_living_separation
-            + 4 * sum(bedroom_cluster_terms)
+            + 4 * bedroom_cluster_bonus_count
             + weights["adjacency"] * kitchen_living_adjacent
-            - 12 * sum(bedroom_living_adjacencies)
-            - 6 * sum(bedroom_kitchen_adjacencies)
-            + weights["zone_bonus"] * sum(bedroom_half_bonus_terms)
+            - 12 * bedroom_living_adjacent_count
+            - 6 * bedroom_kitchen_adjacent_count
+            + weights["zone_bonus"] * bedroom_half_bonus_count
             - weights["living_center"] * living_center_distance
             + (variant_index + 1) * (living["x"] + 2 * living["y"])
         )
@@ -390,8 +408,8 @@ class FloorplanGenerator:
             "bedroom_living_separation": bedroom_living_separation,
             "total_area": total_area,
             "kitchen_living_adjacent": kitchen_living_adjacent,
-            "bedrooms_adjacent_to_living": sum(bedroom_living_adjacencies),
-            "bedrooms_adjacent_to_kitchen": sum(bedroom_kitchen_adjacencies),
+            "bedrooms_adjacent_to_living": bedroom_living_adjacent_count,
+            "bedrooms_adjacent_to_kitchen": bedroom_kitchen_adjacent_count,
             "living_center_distance": living_center_distance,
         }
 
@@ -432,9 +450,7 @@ class FloorplanGenerator:
                 )
 
             score = solver.ObjectiveValue()
-            metric_values = {}
-            for key, expr in metrics.items():
-                metric_values[key] = solver.Value(expr) if hasattr(expr, "Index") else int(expr)
+            metric_values = {key: solver.Value(expr) for key, expr in metrics.items()}
 
             variants.append(
                 FloorplanVariant(
