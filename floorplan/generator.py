@@ -17,13 +17,13 @@ class RoomSpec:
 
 
 ROOMS: List[RoomSpec] = [
-    RoomSpec("living", 22, 38, "day", True),
-    RoomSpec("kitchen", 8, 18, "day", True),
-    RoomSpec("bedroom_1", 9, 18, "night", True),
-    RoomSpec("bedroom_2", 9, 18, "night", True),
-    RoomSpec("bedroom_3", 9, 16, "night", True),
-    RoomSpec("bathroom", 4, 10, "service", True),
-    RoomSpec("wc", 2, 5, "service", False),
+    RoomSpec("living", 22, 52, "day", True),
+    RoomSpec("kitchen", 10, 24, "day", True),
+    RoomSpec("bedroom_1", 10, 22, "night", True),
+    RoomSpec("bedroom_2", 10, 22, "night", True),
+    RoomSpec("bedroom_3", 9, 20, "night", True),
+    RoomSpec("bathroom", 5, 12, "service", True),
+    RoomSpec("wc", 3, 8, "service", False),
 ]
 
 ZONES: Dict[int, Dict[str, object]] = {
