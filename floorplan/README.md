@@ -5,12 +5,13 @@ Base minimale d’un générateur de plans 2D en Python avec OR-Tools.
 ## Installation
 
 ```bash
-pip install -r requirements.txt
+pip install -r floorplan/requirements.txt
 ```
 
 ## Exécution
 
 ```bash
-cd floorplan
-python main.py
+python floorplan/main.py
 ```
+
+Le script affiche les pièces en console et génère automatiquement `floorplan/output.svg`.
