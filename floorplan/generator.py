@@ -1,29 +1,24 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 from ortools.sat.python import cp_model
 
-
-@dataclass(frozen=True)
-class RoomSpec:
-    name: str
-    min_area: int
-    max_area: int
-    zone_tag: str
-    important_for_circulation: bool = False
+try:
+    from floorplan.models import Floorplan, FloorplanVariant, RoomPlacement, RoomSpec
+except ModuleNotFoundError:
+    from models import Floorplan, FloorplanVariant, RoomPlacement, RoomSpec
 
 
 ROOMS: List[RoomSpec] = [
-    RoomSpec("living", 22, 52, "day", True),
-    RoomSpec("kitchen", 10, 24, "day", True),
-    RoomSpec("bedroom_1", 10, 22, "night", True),
-    RoomSpec("bedroom_2", 10, 22, "night", True),
-    RoomSpec("bedroom_3", 9, 20, "night", True),
-    RoomSpec("bathroom", 5, 12, "service", True),
-    RoomSpec("wc", 3, 8, "service", False),
+    RoomSpec("living", "living", 22, 52, "day", True, ("kitchen",), ()),
+    RoomSpec("kitchen", "kitchen", 10, 24, "day", True, ("living",), ("bedroom_1", "bedroom_2", "bedroom_3")),
+    RoomSpec("bedroom_1", "bedroom", 10, 22, "night", True, ("bathroom",), ("kitchen",)),
+    RoomSpec("bedroom_2", "bedroom", 10, 22, "night", True, ("bathroom",), ("kitchen",)),
+    RoomSpec("bedroom_3", "bedroom", 9, 20, "night", True, ("bathroom",), ("kitchen",)),
+    RoomSpec("bathroom", "bathroom", 5, 12, "service", True, ("bedroom_1", "bedroom_2", "bedroom_3"), ()),
+    RoomSpec("wc", "wc", 3, 8, "service", False, ("living", "kitchen"), ()),
 ]
 
 ZONES: Dict[int, Dict[str, object]] = {
@@ -95,8 +90,8 @@ class FloorplanGeneratorV5:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    def generate_variants(self, variants_per_mode: int = 2) -> List[Dict[str, object]]:
-        results: List[Dict[str, object]] = []
+    def generate_variants(self, variants_per_mode: int = 2) -> List[FloorplanVariant]:
+        results: List[FloorplanVariant] = []
         for mode in MODE_WEIGHTS:
             blocked_layouts: List[Dict[str, object]] = []
             for rank in range(1, variants_per_mode + 1):
@@ -105,17 +100,14 @@ class FloorplanGeneratorV5:
                     break
                 blocked_layouts.append(
                     {
-                        "zones": tuple(variant["zones"][room.name] for room in ROOMS),
-                        "centers": tuple(
-                            (variant["rectangles"][room.name]["cx2"], variant["rectangles"][room.name]["cy2"])
-                            for room in ROOMS
-                        ),
+                        "zones": tuple(variant.metrics["zones"][room.name] for room in ROOMS),
+                        "centers": tuple(variant.metrics["centers"][room.name] for room in ROOMS),
                     }
                 )
                 results.append(variant)
         return results
 
-    def _solve_one(self, mode: str, blocked_layouts: List[Dict[str, object]], rank: int) -> Dict[str, object] | None:
+    def _solve_one(self, mode: str, blocked_layouts: List[Dict[str, object]], rank: int) -> FloorplanVariant | None:
         model = cp_model.CpModel()
         weights = MODE_WEIGHTS[mode]
 
@@ -138,7 +130,7 @@ class FloorplanGeneratorV5:
 
         for spec in ROOMS:
             room_name = spec.name
-            area[room_name] = model.NewIntVar(spec.min_area, spec.max_area, f"area_{room_name}")
+            area[room_name] = model.NewIntVar(int(spec.min_area), int(spec.max_area), f"area_{room_name}")
             zone[room_name] = model.NewIntVar(0, len(ZONES) - 1, f"zone_{room_name}")
 
             w[room_name] = model.NewIntVar(2, 8, f"w_{room_name}")
@@ -172,7 +164,6 @@ class FloorplanGeneratorV5:
 
         model.AddNoOverlap2D(x_intervals, y_intervals)
 
-        # Anchor each room center to the selected zone.
         for spec in ROOMS:
             room_name = spec.name
             for z, info in ZONES.items():
@@ -186,14 +177,12 @@ class FloorplanGeneratorV5:
                 model.Add(cy2[room_name] >= 2 * y_min).OnlyEnforceIf(inside)
                 model.Add(cy2[room_name] <= 2 * y_max).OnlyEnforceIf(inside)
 
-        # Basic area / room quality rules.
         total_area = model.NewIntVar(63, 123, "total_area")
         model.Add(total_area == sum(area.values()))
         model.Add(area["living"] >= area["kitchen"] + 6)
         for bedroom in ["bedroom_1", "bedroom_2", "bedroom_3"]:
             model.Add(area["living"] >= area[bedroom] + 4)
 
-        # Zoning preference (soft scoring term).
         zoning_hits_terms: List[cp_model.BoolVar] = []
         for spec in ROOMS:
             room_name = spec.name
@@ -262,7 +251,6 @@ class FloorplanGeneratorV5:
         def pair_var(store: Dict[Tuple[str, str], cp_model.BoolVar], a: str, b: str) -> cp_model.BoolVar:
             return store[sorted_pair(a, b)]
 
-        # Compactness: reward grouping rooms into fewer zones.
         zone_used: Dict[int, cp_model.BoolVar] = {}
         for z in ZONES:
             used = model.NewBoolVar(f"zone_used_{z}")
@@ -275,7 +263,6 @@ class FloorplanGeneratorV5:
         compactness_score = model.NewIntVar(0, len(ZONES), "compactness_score")
         model.Add(compactness_score == len(ZONES) - used_zone_count)
 
-        # Day/night/service zoning targets.
         kitchen_living_adj = pair_var(adjacency, "kitchen", "living")
         kitchen_living_prox = pair_var(proximity, "kitchen", "living")
         kitchen_connected_to_living = model.NewBoolVar("kitchen_connected_to_living")
@@ -328,7 +315,6 @@ class FloorplanGeneratorV5:
         model.AddBoolOr(wc_day_service_terms).OnlyEnforceIf(wc_day_service_hit)
         model.AddBoolAnd([b.Not() for b in wc_day_service_terms]).OnlyEnforceIf(wc_day_service_hit.Not())
 
-        # Circulation proxy: direct or one-hop access to living.
         circulation_terms = []
         hubs = ["kitchen", "bathroom", "bedroom_1", "bedroom_2", "bedroom_3"]
         for spec in ROOMS:
@@ -363,7 +349,6 @@ class FloorplanGeneratorV5:
             - 8 * isolated_bedrooms
         )
 
-        # Diversity pressure: avoid overcrowded zones and enforce structural differences.
         overcrowding_terms = []
         for z in ZONES:
             zone_population = model.NewIntVar(0, len(ROOMS), f"zone_population_{z}")
@@ -392,7 +377,6 @@ class FloorplanGeneratorV5:
             model.Add(same_zone_count == sum(same_flags))
             model.Add(same_zone_count <= len(ROOMS) - 2)
 
-        # Final score with readable sub-scores.
         score = model.NewIntVar(-2000, 4000, "score")
         model.Add(
             score
@@ -433,6 +417,19 @@ class FloorplanGeneratorV5:
             for spec in ROOMS
         }
 
+        placements = [
+            RoomPlacement(
+                name=spec.name,
+                room_type=spec.room_type,
+                x=room_rectangles[spec.name]["x"],
+                y=room_rectangles[spec.name]["y"],
+                w=room_rectangles[spec.name]["w"],
+                h=room_rectangles[spec.name]["h"],
+                zone_id=room_zones[spec.name],
+            )
+            for spec in ROOMS
+        ]
+
         svg_path = self._export_svg(mode, rank, room_rectangles, room_areas)
 
         sub_scores = {
@@ -453,18 +450,15 @@ class FloorplanGeneratorV5:
             "circulation_access": solver.Value(circulation_access),
             "diversity_score": solver.Value(diversity_score),
             "sub_scores": sub_scores,
-        }
-
-        return {
-            "mode": mode,
-            "rank": rank,
-            "score": solver.Value(score),
             "areas": room_areas,
             "zones": room_zones,
+            "centers": {spec.name: (room_rectangles[spec.name]["cx2"], room_rectangles[spec.name]["cy2"]) for spec in ROOMS},
             "rectangles": room_rectangles,
-            "metrics": metrics,
-            "svg_path": str(svg_path),
+            "rank": rank,
         }
+
+        floorplan = Floorplan(width=width_limit, height=height_limit, rooms=placements)
+        return FloorplanVariant(mode=mode, score=solver.Value(score), floorplan=floorplan, metrics=metrics, svg_path=str(svg_path))
 
     def _export_svg(
         self,
@@ -490,9 +484,7 @@ class FloorplanGeneratorV5:
         svg_parts = [
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_width}" height="{svg_height}" viewBox="0 0 {svg_width} {svg_height}">',
             '<rect x="0" y="0" width="100%" height="100%" fill="#f8fafc"/>',
-            '<text x="16" y="24" font-family="Arial" font-size="16" fill="#0f172a">Floorplan V5 - '
-            + mode
-            + f' #{rank}</text>',
+            '<text x="16" y="24" font-family="Arial" font-size="16" fill="#0f172a">Floorplan V5 - ' + mode + f' #{rank}</text>',
         ]
 
         for zone_id, z in ZONES.items():
@@ -511,12 +503,10 @@ class FloorplanGeneratorV5:
             rw = rect["w"] * scale
             rh = rect["h"] * scale
             svg_parts.append(
-                f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" '
-                f'fill="{colors.get(room_name, "#cbd5e1")}" stroke="#0f172a" stroke-width="2" opacity="0.92"/>'
+                f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" fill="{colors.get(room_name, "#cbd5e1")}" stroke="#0f172a" stroke-width="2" opacity="0.92"/>'
             )
             svg_parts.append(
-                f'<text x="{rx + 6}" y="{ry + 20}" font-family="Arial" font-size="12" fill="#111827">'
-                f'{room_name} ({room_areas[room_name]}m²)</text>'
+                f'<text x="{rx + 6}" y="{ry + 20}" font-family="Arial" font-size="12" fill="#111827">{room_name} ({room_areas[room_name]}m²)</text>'
             )
 
         svg_parts.append("</svg>")
