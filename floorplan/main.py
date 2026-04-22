@@ -1,39 +1,36 @@
-from generator import FloorplanGenerator, export_floorplan_svg
-from models import RoomSpec
+from __future__ import annotations
 
-rooms = [
-    RoomSpec("Salon", "living_room", 25, 35),
-    RoomSpec("Cuisine", "kitchen", 10, 15),
-    RoomSpec("Chambre 1", "bedroom", 10, 15),
-    RoomSpec("Chambre 2", "bedroom", 10, 15),
-]
+from floorplan.generator import FloorplanGeneratorV5
 
-generator = FloorplanGenerator(10, 10, rooms, grid_step=0.5)
-variants = generator.generate_variants(count=5)
 
-for variant in variants:
-    print(f"\nVariant {variant.index} | mode={variant.mode} | score={variant.score:.1f}")
-    print(
-        "Metrics: "
-        f"area={variant.metrics['total_area']} cells, "
-        f"compactness_penalty={variant.metrics['compactness_penalty']}, "
-        f"kitchen_living_distance={variant.metrics['kitchen_living_distance']}, "
-        f"bedroom_cluster_distance={variant.metrics['bedroom_cluster_distance']}, "
-        f"bedroom_living_separation={variant.metrics['bedroom_living_separation']}"
-    )
-    print(f"Building: {variant.floorplan.width}m x {variant.floorplan.height}m")
+def _room_summary(areas: dict[str, int], zones: dict[str, int]) -> str:
+    ordered = []
+    for room in sorted(areas.keys()):
+        ordered.append(f"{room}: {areas[room]}m²@Z{zones[room]}")
+    return ", ".join(ordered)
 
-    for room in variant.floorplan.rooms:
-        area = room.w * room.h
+
+def main() -> None:
+    generator = FloorplanGeneratorV5()
+    variants = generator.generate_variants(variants_per_mode=3)
+
+    print("=== Floorplan V5 / Connectivité-Habitabilité ===")
+    if not variants:
+        print("Aucune variante trouvée.")
+        return
+
+    for item in variants:
+        metrics = item["metrics"]
         print(
-            f"- {room.name} | type={room.room_type} | "
-            f"x={room.x:.1f}, y={room.y:.1f}, w={room.w:.1f}, h={room.h:.1f}, area={area:.1f}m²"
+            f"mode={item['mode']} | score={item['score']} | "
+            f"connectivity_score={metrics['connectivity_score']} | "
+            f"kitchen_connected_to_living={metrics['kitchen_connected_to_living']} | "
+            f"connected_bedrooms={metrics['connected_bedrooms']} | "
+            f"isolated_bedrooms={metrics['isolated_bedrooms']}"
         )
+        print(f"  rooms: {_room_summary(item['areas'], item['zones'])}")
+        print(f"  svg: {item['svg_path']}")
 
-    output_svg = f"floorplan/output_{variant.index}.svg"
-    export_floorplan_svg(
-        variant.floorplan,
-        output_svg,
-        title=f"Variant {variant.index} - {variant.mode} - score {variant.score:.1f}",
-    )
-    print(f"SVG exported: {output_svg}")
+
+if __name__ == "__main__":
+    main()
