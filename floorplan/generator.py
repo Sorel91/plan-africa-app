@@ -468,8 +468,10 @@ class FloorplanGeneratorV5:
         room_areas: Dict[str, int],
     ) -> Path:
         scale = 45
-        svg_width = 12 * scale
-        svg_height = 12 * scale
+        margin = 16
+        header_height = 52
+        svg_width = 12 * scale + margin * 2
+        svg_height = 12 * scale + header_height + margin * 2
 
         colors = {
             "living": "#fca5a5",
@@ -481,33 +483,63 @@ class FloorplanGeneratorV5:
             "wc": "#60a5fa",
         }
 
+        zone_stroke = "#cbd5e1"
+        zone_label = "#94a3b8"
+        room_stroke = "#1f2937"
+        text_color = "#111827"
+        subtitle_color = "#475569"
+
         svg_parts = [
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_width}" height="{svg_height}" viewBox="0 0 {svg_width} {svg_height}">',
             '<rect x="0" y="0" width="100%" height="100%" fill="#f8fafc"/>',
-            '<text x="16" y="24" font-family="Arial" font-size="16" fill="#0f172a">Floorplan V5 - ' + mode + f' #{rank}</text>',
+            f'<rect x="{margin}" y="{margin}" width="{12 * scale}" height="{12 * scale}" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>',
+            f'<text x="{margin}" y="{margin - 2 + 18}" font-family="Arial" font-size="18" font-weight="bold" fill="#0f172a">Floorplan V5</text>',
+            f'<text x="{margin + 126}" y="{margin - 2 + 18}" font-family="Arial" font-size="14" fill="#475569">{mode} #{rank}</text>',
         ]
 
+        zone_offset_y = margin + header_height
+        zone_offset_x = margin
+
         for zone_id, z in ZONES.items():
-            zx, zy = int(z["x"] * scale), int(z["y"] * scale)
+            zx, zy = int(z["x"] * scale) + zone_offset_x, int(z["y"] * scale) + zone_offset_y
             zw, zh = int(z["w"] * scale), int(z["h"] * scale)
             svg_parts.append(
-                f'<rect x="{zx}" y="{zy}" width="{zw}" height="{zh}" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/>'
+                f'<rect x="{zx}" y="{zy}" width="{zw}" height="{zh}" fill="none" stroke="{zone_stroke}" stroke-width="1" stroke-dasharray="6 5" opacity="0.55"/>'
             )
             svg_parts.append(
-                f'<text x="{zx + 6}" y="{zy + 16}" font-family="Arial" font-size="11" fill="#64748b">Z{zone_id} ({z["tag"]})</text>'
+                f'<text x="{zx + 8}" y="{zy + 18}" font-family="Arial" font-size="11" fill="{zone_label}" opacity="0.7">Z{zone_id} ({z["tag"]})</text>'
             )
 
         for room_name, rect in room_rectangles.items():
-            rx = rect["x"] * scale
-            ry = rect["y"] * scale
+            rx = rect["x"] * scale + zone_offset_x
+            ry = rect["y"] * scale + zone_offset_y
             rw = rect["w"] * scale
             rh = rect["h"] * scale
+            fill = colors.get(room_name, "#cbd5e1")
+
             svg_parts.append(
-                f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" fill="{colors.get(room_name, "#cbd5e1")}" stroke="#0f172a" stroke-width="2" opacity="0.92"/>'
+                f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" fill="{fill}" stroke="{room_stroke}" stroke-width="2.5" opacity="1"/>'
+            )
+
+            label = f'{room_name} ({room_areas[room_name]}m²)'
+            font_size = 13 if rw >= 100 and rh >= 55 else 11
+            badge_width = min(max(len(label) * 7 + 14, 72), max(int(rw) - 12, 72))
+            badge_height = 24
+            badge_x = rx + 6
+            badge_y = ry + 6
+
+            svg_parts.append(
+                f'<rect x="{badge_x}" y="{badge_y}" width="{badge_width}" height="{badge_height}" rx="4" fill="#ffffff" fill-opacity="0.78" stroke="none"/>'
             )
             svg_parts.append(
-                f'<text x="{rx + 6}" y="{ry + 20}" font-family="Arial" font-size="12" fill="#111827">{room_name} ({room_areas[room_name]}m²)</text>'
+                f'<text x="{badge_x + 8}" y="{badge_y + 16}" font-family="Arial" font-size="{font_size}" font-weight="600" fill="{text_color}">{label}</text>'
             )
+
+            dims = f'{rect["w"]} x {rect["h"]}'
+            if rh >= 70:
+                svg_parts.append(
+                    f'<text x="{badge_x + 8}" y="{badge_y + 32}" font-family="Arial" font-size="10" fill="{subtitle_color}">{dims}</text>'
+                )
 
         svg_parts.append("</svg>")
         path = self.output_dir / f"v5_{mode}_{rank}.svg"
