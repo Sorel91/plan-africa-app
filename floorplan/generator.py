@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from math import ceil, floor
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from ortools.sat.python import cp_model
 
@@ -11,8 +11,10 @@ from models import Floorplan, RoomPlacement
 @dataclass
 class FloorplanVariant:
     index: int
+    mode: str
     floorplan: Floorplan
     score: float
+    metrics: Dict[str, int]
 
 
 class FloorplanGenerator:
@@ -27,7 +29,39 @@ class FloorplanGenerator:
         ratio = area_m2 / self.cell_area
         return int(ceil(ratio) if mode == "min" else floor(ratio))
 
-    def _build_model(self, variant_index, previous_signatures):
+    def _mode_for_index(self, variant_index):
+        modes = [
+            {
+                "name": "A-grand-salon-horizontal",
+                "living_horizontal": True,
+                "living_on_top": True,
+                "weights": {"kitchen_near": 7, "bed_cluster": 5, "bed_living_sep": 4, "compact": 9},
+            },
+            {
+                "name": "B-grand-salon-vertical",
+                "living_vertical": True,
+                "living_on_left": True,
+                "weights": {"kitchen_near": 8, "bed_cluster": 6, "bed_living_sep": 5, "compact": 9},
+            },
+            {
+                "name": "C-chambres-regroupees",
+                "bedrooms_same_half": "top",
+                "weights": {"kitchen_near": 6, "bed_cluster": 10, "bed_living_sep": 5, "compact": 8},
+            },
+            {
+                "name": "D-cuisine-compacte",
+                "kitchen_compact": True,
+                "weights": {"kitchen_near": 12, "bed_cluster": 5, "bed_living_sep": 4, "compact": 8},
+            },
+            {
+                "name": "E-zonage-jour-nuit",
+                "day_night_split": True,
+                "weights": {"kitchen_near": 8, "bed_cluster": 8, "bed_living_sep": 9, "compact": 7},
+            },
+        ]
+        return modes[variant_index % len(modes)]
+
+    def _build_model(self, variant_index, mode, previous_signatures):
         model = cp_model.CpModel()
         room_vars = []
 
@@ -52,9 +86,7 @@ class FloorplanGenerator:
             model.Add(y + h <= self.height)
             model.AddMultiplicationEquality(area, [w, h])
             model.AddAbsEquality(diff, w - h)
-
-            # Hard compactness guard to avoid extreme rectangles such as 3.5 x 10.
-            model.Add(diff <= 7)
+            model.Add(diff <= 6)
 
             room_vars.append(
                 {"room": room, "x": x, "y": y, "w": w, "h": h, "area": area, "diff": diff}
@@ -76,18 +108,40 @@ class FloorplanGenerator:
                 model.Add(r2["y"] + r2["h"] <= r1["y"]).OnlyEnforceIf(below)
                 model.AddBoolOr([left, right, above, below])
 
-        living_rooms = [rv for rv in room_vars if rv["room"].room_type == "living_room"]
-        if living_rooms:
-            living_area = living_rooms[0]["area"]
-            for rv in room_vars:
-                if rv["room"].room_type != "living_room":
-                    model.Add(living_area >= rv["area"] + 4)
+        living = next(rv for rv in room_vars if rv["room"].room_type == "living_room")
+        kitchen = next(rv for rv in room_vars if rv["room"].room_type == "kitchen")
+        bedrooms = [rv for rv in room_vars if rv["room"].room_type == "bedroom"]
+
+        for rv in room_vars:
+            if rv["room"].room_type != "living_room":
+                model.Add(living["area"] >= rv["area"] + 4)
+
+        if mode.get("living_horizontal"):
+            model.Add(living["w"] >= living["h"] + 2)
+        if mode.get("living_vertical"):
+            model.Add(living["h"] >= living["w"] + 2)
+        if mode.get("living_on_top"):
+            model.Add(living["y"] + living["h"] <= self.height // 2 + 2)
+        if mode.get("living_on_left"):
+            model.Add(living["x"] + living["w"] <= self.width // 2 + 2)
+
+        if mode.get("bedrooms_same_half") == "top":
+            for bed in bedrooms:
+                model.Add(bed["y"] + bed["h"] <= self.height // 2 + 3)
+
+        if mode.get("day_night_split"):
+            for bed in bedrooms:
+                model.Add(bed["x"] >= self.width // 2 - 2)
+            model.Add(living["x"] + living["w"] <= self.width // 2 + 2)
+
+        if mode.get("kitchen_compact"):
+            model.Add(kitchen["diff"] <= 2)
 
         bedroom_compact_bonus_terms = []
         thin_penalties = []
-        for i, rv in enumerate(room_vars):
-            room = rv["room"]
+        bedroom_cluster_terms = []
 
+        for i, rv in enumerate(room_vars):
             min_dim = model.NewIntVar(0, self.width, f"min_dim_{i}")
             model.AddMinEquality(min_dim, [rv["w"], rv["h"]])
             thin = model.NewBoolVar(f"thin_{i}")
@@ -95,91 +149,112 @@ class FloorplanGenerator:
             model.Add(min_dim >= 4).OnlyEnforceIf(thin.Not())
             thin_penalties.append(thin)
 
-            if room.room_type == "bedroom":
+            if rv["room"].room_type == "bedroom":
                 compact_bedroom = model.NewBoolVar(f"compact_bedroom_{i}")
-                model.Add(rv["diff"] <= 3).OnlyEnforceIf(compact_bedroom)
-                model.Add(rv["diff"] >= 4).OnlyEnforceIf(compact_bedroom.Not())
+                model.Add(rv["diff"] <= 2).OnlyEnforceIf(compact_bedroom)
+                model.Add(rv["diff"] >= 3).OnlyEnforceIf(compact_bedroom.Not())
                 bedroom_compact_bonus_terms.append(compact_bedroom)
 
+        bed_pair_distances = []
+        for i in range(len(bedrooms)):
+            for j in range(i + 1, len(bedrooms)):
+                dx = model.NewIntVar(0, self.width, f"bed_dx_{i}_{j}")
+                dy = model.NewIntVar(0, self.height, f"bed_dy_{i}_{j}")
+                model.AddAbsEquality(dx, bedrooms[i]["x"] - bedrooms[j]["x"])
+                model.AddAbsEquality(dy, bedrooms[i]["y"] - bedrooms[j]["y"])
+                dist = model.NewIntVar(0, self.width + self.height, f"bed_dist_{i}_{j}")
+                model.Add(dist == dx + dy)
+                bed_pair_distances.append(dist)
+
+                close = model.NewBoolVar(f"bed_close_{i}_{j}")
+                model.Add(dist <= 6).OnlyEnforceIf(close)
+                model.Add(dist >= 7).OnlyEnforceIf(close.Not())
+                bedroom_cluster_terms.append(close)
+
+        kitchen_living_dx = model.NewIntVar(0, self.width, "kitchen_living_dx")
+        kitchen_living_dy = model.NewIntVar(0, self.height, "kitchen_living_dy")
+        model.AddAbsEquality(kitchen_living_dx, kitchen["x"] - living["x"])
+        model.AddAbsEquality(kitchen_living_dy, kitchen["y"] - living["y"])
+        kitchen_living_distance = model.NewIntVar(0, self.width + self.height, "kitchen_living_distance")
+        model.Add(kitchen_living_distance == kitchen_living_dx + kitchen_living_dy)
+
+        bedroom_living_distances = []
+        for i, bed in enumerate(bedrooms):
+            bdx = model.NewIntVar(0, self.width, f"bed_living_dx_{i}")
+            bdy = model.NewIntVar(0, self.height, f"bed_living_dy_{i}")
+            model.AddAbsEquality(bdx, bed["x"] - living["x"])
+            model.AddAbsEquality(bdy, bed["y"] - living["y"])
+            bdist = model.NewIntVar(0, self.width + self.height, f"bed_living_dist_{i}")
+            model.Add(bdist == bdx + bdy)
+            bedroom_living_distances.append(bdist)
+
         total_area = sum(rv["area"] for rv in room_vars)
-        total_compactness_penalty = sum(rv["diff"] for rv in room_vars)
+        compactness_penalty = sum(rv["diff"] for rv in room_vars)
+        bedroom_cluster_distance = sum(bed_pair_distances) if bed_pair_distances else 0
+        bedroom_living_separation = sum(bedroom_living_distances)
 
-        # Variant bias to spread solutions across the building and get distinct proposals.
-        variant_bias = []
-        for i, rv in enumerate(room_vars):
-            if variant_index % 2 == 0:
-                variant_bias.append((i + 1) * rv["x"])
-            else:
-                variant_bias.append((i + 1) * rv["y"])
-
-        # Exclude exact duplicates from previous variants.
-        for prev_idx, signature in enumerate(previous_signatures):
-            equals = []
-            for i, (px, py, pw, ph) in enumerate(signature):
-                eq_x = model.NewBoolVar(f"eq_x_{prev_idx}_{i}")
-                eq_y = model.NewBoolVar(f"eq_y_{prev_idx}_{i}")
-                eq_w = model.NewBoolVar(f"eq_w_{prev_idx}_{i}")
-                eq_h = model.NewBoolVar(f"eq_h_{prev_idx}_{i}")
-
-                model.Add(room_vars[i]["x"] == px).OnlyEnforceIf(eq_x)
-                model.Add(room_vars[i]["x"] != px).OnlyEnforceIf(eq_x.Not())
-                model.Add(room_vars[i]["y"] == py).OnlyEnforceIf(eq_y)
-                model.Add(room_vars[i]["y"] != py).OnlyEnforceIf(eq_y.Not())
-                model.Add(room_vars[i]["w"] == pw).OnlyEnforceIf(eq_w)
-                model.Add(room_vars[i]["w"] != pw).OnlyEnforceIf(eq_w.Not())
-                model.Add(room_vars[i]["h"] == ph).OnlyEnforceIf(eq_h)
-                model.Add(room_vars[i]["h"] != ph).OnlyEnforceIf(eq_h.Not())
-
-                equals.extend([eq_x, eq_y, eq_w, eq_h])
-
-            model.AddBoolOr([flag.Not() for flag in equals])
-
+        weights = mode["weights"]
         objective = (
-            25 * total_area
-            - 6 * total_compactness_penalty
-            - 20 * sum(thin_penalties)
-            + 5 * sum(bedroom_compact_bonus_terms)
-            + sum(variant_bias)
+            22 * total_area
+            - weights["compact"] * compactness_penalty
+            - 24 * sum(thin_penalties)
+            + 7 * sum(bedroom_compact_bonus_terms)
+            - weights["kitchen_near"] * kitchen_living_distance
+            - weights["bed_cluster"] * bedroom_cluster_distance
+            + weights["bed_living_sep"] * bedroom_living_separation
+            + 4 * sum(bedroom_cluster_terms)
+            + (variant_index + 1) * (living["x"] + 2 * living["y"])
         )
         model.Maximize(objective)
 
-        return model, room_vars
+        for prev_idx, signature in enumerate(previous_signatures):
+            diffs = []
+            for i, (px, py, pw, ph) in enumerate(signature):
+                for axis, value in (
+                    ("x", px),
+                    ("y", py),
+                    ("w", pw),
+                    ("h", ph),
+                ):
+                    d = model.NewIntVar(0, max(self.width, self.height), f"d_{prev_idx}_{i}_{axis}")
+                    model.AddAbsEquality(d, room_vars[i][axis] - value)
+                    diffs.append(d)
+
+            total_diff = model.NewIntVar(0, 200, f"total_diff_{prev_idx}")
+            model.Add(total_diff == sum(diffs))
+            model.Add(total_diff >= 8)
+
+        metrics = {
+            "kitchen_living_distance": kitchen_living_distance,
+            "bedroom_cluster_distance": bedroom_cluster_distance,
+            "compactness_penalty": compactness_penalty,
+            "bedroom_living_separation": bedroom_living_separation,
+            "total_area": total_area,
+        }
+
+        return model, room_vars, metrics
 
     def generate_variants(self, count=5):
         variants: List[FloorplanVariant] = []
         previous_signatures: List[List[Tuple[int, int, int, int]]] = []
 
         for variant_index in range(count):
-            model, room_vars = self._build_model(variant_index, previous_signatures)
+            mode = self._mode_for_index(variant_index)
+            model, room_vars, metrics = self._build_model(variant_index, mode, previous_signatures)
             solver = cp_model.CpSolver()
             solver.parameters.max_time_in_seconds = 10
             status = solver.Solve(model)
 
             if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-                break
+                continue
 
             placements = []
             signature = []
-            area_score = 0
-            compactness_penalty = 0
-            thin_count = 0
-            bedroom_bonus = 0
-
             for rv in room_vars:
                 x = solver.Value(rv["x"])
                 y = solver.Value(rv["y"])
                 w = solver.Value(rv["w"])
                 h = solver.Value(rv["h"])
-                area = solver.Value(rv["area"])
-                diff = solver.Value(rv["diff"])
-
-                area_score += area
-                compactness_penalty += diff
-                if min(w, h) <= 3:
-                    thin_count += 1
-                if rv["room"].room_type == "bedroom" and diff <= 3:
-                    bedroom_bonus += 1
-
                 signature.append((x, y, w, h))
                 placements.append(
                     RoomPlacement(
@@ -192,22 +267,22 @@ class FloorplanGenerator:
                     )
                 )
 
-            score = (
-                25 * area_score
-                - 6 * compactness_penalty
-                - 20 * thin_count
-                + 5 * bedroom_bonus
-            )
+            score = solver.ObjectiveValue()
+            metric_values = {}
+            for key, expr in metrics.items():
+                metric_values[key] = solver.Value(expr) if hasattr(expr, "Index") else int(expr)
 
             variants.append(
                 FloorplanVariant(
                     index=variant_index + 1,
+                    mode=mode["name"],
                     floorplan=Floorplan(
                         width=self.width * self.grid_step,
                         height=self.height * self.grid_step,
                         rooms=placements,
                     ),
                     score=score,
+                    metrics=metric_values,
                 )
             )
             previous_signatures.append(signature)
@@ -225,7 +300,7 @@ def export_floorplan_svg(floorplan, output_path, title=None, scale=52):
         "bedroom": "#bde0fe",
     }
 
-    header_height = 40
+    header_height = 46
     width_px = int(floorplan.width * scale)
     height_px = int(floorplan.height * scale) + header_height
 
@@ -236,7 +311,7 @@ def export_floorplan_svg(floorplan, output_path, title=None, scale=52):
 
     if title:
         lines.append(
-            f'<text x="10" y="26" font-size="18" font-family="Arial" font-weight="bold" fill="#111">{title}</text>'
+            f'<text x="10" y="30" font-size="18" font-family="Arial" font-weight="bold" fill="#111">{title}</text>'
         )
 
     for room in floorplan.rooms:

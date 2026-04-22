@@ -12,7 +12,15 @@ generator = FloorplanGenerator(10, 10, rooms, grid_step=0.5)
 variants = generator.generate_variants(count=5)
 
 for variant in variants:
-    print(f"\nVariant {variant.index} | score={variant.score:.1f}")
+    print(f"\nVariant {variant.index} | mode={variant.mode} | score={variant.score:.1f}")
+    print(
+        "Metrics: "
+        f"area={variant.metrics['total_area']} cells, "
+        f"compactness_penalty={variant.metrics['compactness_penalty']}, "
+        f"kitchen_living_distance={variant.metrics['kitchen_living_distance']}, "
+        f"bedroom_cluster_distance={variant.metrics['bedroom_cluster_distance']}, "
+        f"bedroom_living_separation={variant.metrics['bedroom_living_separation']}"
+    )
     print(f"Building: {variant.floorplan.width}m x {variant.floorplan.height}m")
 
     for room in variant.floorplan.rooms:
@@ -26,6 +34,6 @@ for variant in variants:
     export_floorplan_svg(
         variant.floorplan,
         output_svg,
-        title=f"Variant {variant.index} - score {variant.score:.1f}",
+        title=f"Variant {variant.index} - {variant.mode} - score {variant.score:.1f}",
     )
     print(f"SVG exported: {output_svg}")

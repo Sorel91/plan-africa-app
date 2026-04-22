@@ -1,4 +1,4 @@
-# Floorplan Generator (V3)
+# Floorplan Generator (V4)
 
 Base Python d’un générateur de plans 2D avec OR-Tools, en grille discrète de 0.5 m.
 
@@ -18,13 +18,15 @@ python floorplan/main.py
 
 Le script :
 
-- génère **plusieurs variantes** de plan (5 par défaut),
-- affiche un résumé en console avec un **score** par variante,
-- exporte un SVG par variante :
-  - `floorplan/output_1.svg`
-  - `floorplan/output_2.svg`
-  - `floorplan/output_3.svg`
-  - `floorplan/output_4.svg`
-  - `floorplan/output_5.svg`
+- génère plusieurs variantes de plan (5 par défaut),
+- applique des **modes de layout** différents pour augmenter la diversité,
+- calcule un score avec compacité + zoning simple,
+- affiche un résumé console par variante (score, mode, métriques),
+- exporte un SVG par variante : `floorplan/output_1.svg` à `floorplan/output_5.svg`.
 
-Les SVG incluent des labels lisibles (nom + surface + dimensions) et des couleurs par type de pièce.
+Le zoning simple inclut :
+
+- chambres regroupées selon le mode,
+- salon dominant,
+- cuisine encouragée proche du salon,
+- séparation chambre/salon favorisée.
