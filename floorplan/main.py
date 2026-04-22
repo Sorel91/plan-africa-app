@@ -17,19 +17,27 @@ def main() -> None:
     generator = FloorplanGeneratorV5()
     variants = generator.generate_variants(variants_per_mode=3)
 
-    print("=== Floorplan V5 / Connectivité-Habitabilité ===")
+    print("=== Floorplan V5 / OR-Tools CP-SAT layout ===")
     if not variants:
         print("Aucune variante trouvée.")
         return
 
     for item in variants:
         metrics = item["metrics"]
+        sub_scores = metrics["sub_scores"]
         print(
             f"mode={item['mode']} | score={item['score']} | "
-            f"connectivity_score={metrics['connectivity_score']} | "
-            f"kitchen_connected_to_living={metrics['kitchen_connected_to_living']} | "
+            f"compactness={sub_scores['compactness']} | "
+            f"zoning={sub_scores['zoning']} | "
+            f"connectivity={sub_scores['connectivity']} | "
+            f"diversity={sub_scores['diversity']}"
+        )
+        print(
+            f"  kitchen_connected_to_living={metrics['kitchen_connected_to_living']} | "
             f"connected_bedrooms={metrics['connected_bedrooms']} | "
-            f"isolated_bedrooms={metrics['isolated_bedrooms']}"
+            f"isolated_bedrooms={metrics['isolated_bedrooms']} | "
+            f"bathroom_near_bedrooms={metrics['bathroom_near_bedrooms']} | "
+            f"circulation_access={metrics['circulation_access']}"
         )
         print(f"  rooms: {_room_summary(item['areas'], item['zones'])}")
         print(f"  svg: {item['svg_path']}")
