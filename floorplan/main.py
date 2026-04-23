@@ -10,7 +10,7 @@ def main() -> None:
     generator = FloorplanGeneratorV6()
     variants = generator.generate_variants(variants_per_mode=3)
 
-    print("=== Floorplan V6 / OR-Tools CP-SAT layout ===")
+    print("=== Floorplan V6 / Treemap hiérarchique (Mirahmadi 2012) ===")
 
     if not variants:
         print("Aucune variante trouvée.")
