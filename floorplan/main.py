@@ -25,8 +25,11 @@ def main() -> None:
         )
 
         print(
-            f"  kitchen_connected_to_living={m['kitchen_connected_to_living']} | "
-            f"connected_bedrooms={m['connected_bedrooms']} | "
+            f"  occupied_area={m['occupied_area']} | "
+            f"empty_area={m['empty_area']} | "
+            f"kitchen_connected_to_living={m['kitchen_connected_to_living']} | "
+            f"hall_connected_to_living={m['hall_connected_to_living']} | "
+            f"independent_bedrooms={m['independent_bedrooms']} | "
             f"isolated_bedrooms={m['isolated_bedrooms']} | "
             f"bathroom_near_bedrooms={m['bathroom_near_bedrooms']} | "
             f"circulation_access={m['circulation_access']}"
