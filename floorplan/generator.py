@@ -336,23 +336,17 @@ class FloorplanGeneratorV5:
         model.AddBoolAnd([b.Not() for b in wc_day_service_terms]).OnlyEnforceIf(wc_day_service_hit.Not())
 
         circulation_terms = []
-        hubs = ["living", "hall"]
         for spec in ROOMS:
             if spec.name in {"living", "hall"} or not spec.important_for_circulation:
                 continue
 
             direct = pair_var(adjacency, spec.name, "living")
-            one_hop_candidates = [direct]
-            for hub in hubs:
-                if hub == spec.name:
-                    continue
-                hop = model.NewBoolVar(f"hop_{spec.name}_via_{hub}")
-                model.AddBoolAnd([pair_var(adjacency, spec.name, hub), pair_var(adjacency, hub, "living")]).OnlyEnforceIf(hop)
-                model.AddBoolOr([pair_var(adjacency, spec.name, hub).Not(), pair_var(adjacency, hub, "living").Not()]).OnlyEnforceIf(hop.Not())
-                one_hop_candidates.append(hop)
+            via_hall = model.NewBoolVar(f"hop_{spec.name}_via_hall")
+            model.AddBoolAnd([pair_var(adjacency, spec.name, "hall"), hall_connected_to_living]).OnlyEnforceIf(via_hall)
+            model.AddBoolOr([pair_var(adjacency, spec.name, "hall").Not(), hall_connected_to_living.Not()]).OnlyEnforceIf(via_hall.Not())
 
             access = model.NewBoolVar(f"access_to_living_{spec.name}")
-            model.AddMaxEquality(access, one_hop_candidates)
+            model.AddMaxEquality(access, [direct, via_hall])
             circulation_terms.append(access)
 
         circulation_access = model.NewIntVar(0, len(circulation_terms) + 1, "circulation_access")
