@@ -42,9 +42,9 @@ ZONE_NEIGHBORS: Dict[int, List[int]] = {
 
 MODE_WEIGHTS = {
     "balanced": {
-        "fill": 14,
-        "empty_area": -22,
-        "compactness": 3,
+        "fill": 22,
+        "empty_area": -60,
+        "compactness": 4,
         "zoning": 4,
         "living_dominance": 4,
         "kitchen_living": 16,
@@ -55,13 +55,14 @@ MODE_WEIGHTS = {
         "bathroom_bedroom": 9,
         "wc_day_service": 4,
         "circulation": 14,
-        "diversity": 8,
+        "diversity": 6,
         "hall_bonus": 10,
+        "entry_bonus": 12,
     },
     "strict_connectivity": {
-        "fill": 12,
-        "empty_area": -20,
-        "compactness": 2,
+        "fill": 20,
+        "empty_area": -55,
+        "compactness": 3,
         "zoning": 3,
         "living_dominance": 4,
         "kitchen_living": 26,
@@ -72,13 +73,14 @@ MODE_WEIGHTS = {
         "bathroom_bedroom": 10,
         "wc_day_service": 4,
         "circulation": 18,
-        "diversity": 7,
+        "diversity": 5,
         "hall_bonus": 14,
+        "entry_bonus": 14,
     },
     "zoning_first": {
-        "fill": 13,
-        "empty_area": -21,
-        "compactness": 3,
+        "fill": 21,
+        "empty_area": -58,
+        "compactness": 4,
         "zoning": 10,
         "living_dominance": 5,
         "kitchen_living": 12,
@@ -89,8 +91,9 @@ MODE_WEIGHTS = {
         "bathroom_bedroom": 11,
         "wc_day_service": 5,
         "circulation": 14,
-        "diversity": 7,
+        "diversity": 5,
         "hall_bonus": 12,
+        "entry_bonus": 13,
     },
 }
 
@@ -192,10 +195,11 @@ class FloorplanGeneratorV5:
         model.Add(total_area == sum(area.values()))
         empty_area = model.NewIntVar(0, building_area, "empty_area")
         model.Add(empty_area == building_area - total_area)
-        model.Add(total_area >= 108)
+        model.Add(empty_area <= 2)
+        model.Add(total_area >= building_area - 2)
 
         model.Add(area["living"] >= area["kitchen"] + 6)
-        model.Add(area["living"] >= area["hall"] + 10)
+        model.Add(area["living"] >= area["hall"] + 8)
         for bedroom in ["bedroom_1", "bedroom_2", "bedroom_3"]:
             model.Add(area["living"] >= area[bedroom] + 2)
 
@@ -288,6 +292,20 @@ class FloorplanGeneratorV5:
         hall_connected_to_living = model.NewBoolVar("hall_connected_to_living")
         model.AddMaxEquality(hall_connected_to_living, [hall_living_adj, pair_var(proximity, "hall", "living")])
 
+        entry_into_living = model.NewBoolVar("entry_into_living")
+        entry_into_hall = model.NewBoolVar("entry_into_hall")
+        model.Add(y["living"] == 0).OnlyEnforceIf(entry_into_living)
+        model.Add(y["living"] >= 1).OnlyEnforceIf(entry_into_living.Not())
+        model.Add(y["hall"] == 0).OnlyEnforceIf(entry_into_hall)
+        model.Add(y["hall"] >= 1).OnlyEnforceIf(entry_into_hall.Not())
+
+        entry_access_ok = model.NewBoolVar("entry_access_ok")
+        entry_via_hall = model.NewBoolVar("entry_via_hall")
+        model.AddBoolAnd([entry_into_hall, hall_connected_to_living]).OnlyEnforceIf(entry_via_hall)
+        model.AddBoolOr([entry_into_hall.Not(), hall_connected_to_living.Not()]).OnlyEnforceIf(entry_via_hall.Not())
+        model.AddMaxEquality(entry_access_ok, [entry_into_living, entry_via_hall])
+        model.Add(entry_access_ok == 1)
+
         kitchen_isolated = model.NewIntVar(0, 1, "kitchen_isolated")
         model.Add(kitchen_isolated == 1 - kitchen_connected_to_living)
 
@@ -349,10 +367,10 @@ class FloorplanGeneratorV5:
             model.AddMaxEquality(access, [direct, via_hall])
             circulation_terms.append(access)
 
-        circulation_access = model.NewIntVar(0, len(circulation_terms) + 1, "circulation_access")
-        model.Add(circulation_access == sum(circulation_terms) + hall_connected_to_living)
+        circulation_access = model.NewIntVar(0, len(circulation_terms) + 2, "circulation_access")
+        model.Add(circulation_access == sum(circulation_terms) + hall_connected_to_living + entry_access_ok)
 
-        connectivity_score = model.NewIntVar(0, 300, "connectivity_score")
+        connectivity_score = model.NewIntVar(0, 320, "connectivity_score")
         model.Add(
             connectivity_score
             == 12 * kitchen_connected_to_living
@@ -361,6 +379,7 @@ class FloorplanGeneratorV5:
             + 3 * bedroom_cluster_score
             + 4 * bathroom_near_bedrooms
             + 6 * circulation_access
+            + 8 * entry_access_ok
             - 10 * isolated_bedrooms
         )
 
@@ -392,7 +411,7 @@ class FloorplanGeneratorV5:
             model.Add(same_zone_count == sum(same_flags))
             model.Add(same_zone_count <= len(ROOMS) - 2)
 
-        score = model.NewIntVar(-10000, 10000, "score")
+        score = model.NewIntVar(-20000, 20000, "score")
         model.Add(
             score
             == weights["fill"] * total_area
@@ -401,6 +420,7 @@ class FloorplanGeneratorV5:
             + weights["zoning"] * zoning_score
             + weights["living_dominance"] * area["living"]
             + weights["hall_bonus"] * hall_connected_to_living
+            + weights["entry_bonus"] * entry_access_ok
             + weights["kitchen_living"] * kitchen_living_adj
             + weights["kitchen_isolation_malus"] * kitchen_isolated
             + weights["independent_bedrooms"] * independent_bedrooms
@@ -461,6 +481,9 @@ class FloorplanGeneratorV5:
         metrics = {
             "occupied_area": solver.Value(total_area),
             "empty_area": solver.Value(empty_area),
+            "entry_access_ok": solver.Value(entry_access_ok),
+            "entry_into_living": solver.Value(entry_into_living),
+            "entry_into_hall": solver.Value(entry_into_hall),
             "isolated_bedrooms": solver.Value(isolated_bedrooms),
             "independent_bedrooms": solver.Value(independent_bedrooms),
             "hall_connected_to_living": solver.Value(hall_connected_to_living),
