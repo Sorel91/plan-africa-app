@@ -12,6 +12,10 @@ def main() -> None:
 
     print("=== Floorplan V5 / OR-Tools CP-SAT layout ===")
 
+    if not variants:
+        print("Aucune variante trouvée.")
+        return
+
     for v in variants:
         m = v.metrics
         sub = m["sub_scores"]
