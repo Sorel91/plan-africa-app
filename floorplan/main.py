@@ -10,7 +10,7 @@ def main() -> None:
     generator = FloorplanGeneratorV6()
     variants = generator.generate_variants(variants_per_mode=3)
 
-    print("=== Floorplan V6 / Slicing + adjacency graph heuristic ===")
+    print("=== Floorplan V6 / OR-Tools CP-SAT layout ===")
 
     if not variants:
         print("Aucune variante trouvée.")

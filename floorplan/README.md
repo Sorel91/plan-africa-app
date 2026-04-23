@@ -1,25 +1,21 @@
-# Floorplan V6 (Slicing layout + adjacency graph)
+# Floorplan V6 (CP-SAT layout + zoning + circulation)
 
-Cette version remplace l'ancien solveur CP-SAT par une approche **constructive + heuristique** plus lisible et plus rapide à itérer.
+Refonte V6 : retour à une base **CP-SAT robuste** (OR-Tools), pour privilégier la qualité des plans 2D et éviter les artefacts de l'approche purement heuristique.
 
-## Principes de conception (inspirés des guides de floorplanning)
+## Principes appliqués
 
-- **Slicing floorplan / guillotine partition** : découpage récursif d'une zone rectangulaire en sous-rectangles.
-- **Adjacency graph** : vérification des connexions clés (cuisine-salon, chambres-hall/salon, etc.) via contacts d'arêtes.
-- **Macro-zoning** : affectation initiale des pièces dans des zones jour / nuit / service pour conserver une logique architecturale.
+- **2D rectangle packing** avec `AddNoOverlap2D` pour garantir l'absence de chevauchement.
+- **Area-driven sizing** avec `area = w * h` (`AddMultiplicationEquality`) pour des surfaces cohérentes.
+- **Macro-zoning guidé** (jour / nuit / service) via contraintes sur les centres des pièces.
+- **Adjacency/proximity scoring** inspiré des pratiques de space-planning (proximité fonctionnelle et circulation).
+- **Diversity blocking** entre variantes pour éviter les plans quasi identiques.
 
-## Pipeline V6
+## Pipeline
 
-1. Choisir un template de zones selon le mode (`balanced`, `strict_connectivity`, `zoning_first`).
-2. Découper chaque macro-zone en rectangles de pièces via un slicing récursif.
-3. Calculer les métriques (zoning, connectivité, compacité, diversité, respect des surfaces).
-4. Exporter les variantes SVG dans `floorplan/out/`.
-
-## Pourquoi c'est moins laborieux
-
-- Plus besoin de maintenir un grand modèle CP-SAT avec des centaines de contraintes booléennes.
-- Les règles sont localisées dans des fonctions courtes (`_slice_zone`, `_build_adjacency`, `_compute_metrics`).
-- L'exploration de variantes est simple à enrichir via les templates de zones.
+1. Créer les variables géométriques `(x, y, w, h)` et surfaces.
+2. Appliquer contraintes dures (non-overlap, limites, accès, connectivité minimale).
+3. Scorer les critères (zoning, circulation, compacité, connectivité, diversité).
+4. Extraire plusieurs variantes par mode et exporter en SVG.
 
 ## Exécution
 
@@ -28,4 +24,4 @@ pip install -r floorplan/requirements.txt
 python floorplan/main.py
 ```
 
-Les variantes SVG sont générées dans `floorplan/out/`.
+Sortie : variantes SVG dans `floorplan/out/`.
