@@ -12,30 +12,31 @@ except ModuleNotFoundError:
 
 
 ROOMS: List[RoomSpec] = [
-    RoomSpec("living", "living", 22, 52, "day", True, ("kitchen",), ()),
-    RoomSpec("kitchen", "kitchen", 10, 24, "day", True, ("living",), ("bedroom_1", "bedroom_2", "bedroom_3")),
-    RoomSpec("bedroom_1", "bedroom", 10, 22, "night", True, ("bathroom",), ("kitchen",)),
-    RoomSpec("bedroom_2", "bedroom", 10, 22, "night", True, ("bathroom",), ("kitchen",)),
-    RoomSpec("bedroom_3", "bedroom", 9, 20, "night", True, ("bathroom",), ("kitchen",)),
-    RoomSpec("bathroom", "bathroom", 5, 12, "service", True, ("bedroom_1", "bedroom_2", "bedroom_3"), ()),
-    RoomSpec("wc", "wc", 3, 8, "service", False, ("living", "kitchen"), ()),
+    RoomSpec("living", "living", 20, 46, "day", True, ("kitchen", "hall"), ()),
+    RoomSpec("kitchen", "kitchen", 8, 18, "day", True, ("living",), ("bedroom_1", "bedroom_2", "bedroom_3")),
+    RoomSpec("hall", "hall", 4, 8, "service", True, ("living", "bedroom_1", "bedroom_2", "bedroom_3"), ()),
+    RoomSpec("bedroom_1", "bedroom", 9, 18, "night", True, ("hall", "living", "bathroom"), ("kitchen",)),
+    RoomSpec("bedroom_2", "bedroom", 9, 18, "night", True, ("hall", "living", "bathroom"), ("kitchen",)),
+    RoomSpec("bedroom_3", "bedroom", 9, 16, "night", True, ("hall", "living", "bathroom"), ("kitchen",)),
+    RoomSpec("bathroom", "bathroom", 4, 10, "service", True, ("bedroom_1", "bedroom_2", "bedroom_3", "hall"), ()),
+    RoomSpec("wc", "wc", 2, 5, "service", False, ("living", "hall"), ()),
 ]
 
 ZONES: Dict[int, Dict[str, object]] = {
-    0: {"x": 0, "y": 0, "w": 8, "h": 4, "tag": "day"},
-    1: {"x": 8, "y": 0, "w": 4, "h": 4, "tag": "day"},
-    2: {"x": 0, "y": 4, "w": 6, "h": 6, "tag": "night"},
-    3: {"x": 6, "y": 4, "w": 6, "h": 6, "tag": "night"},
-    4: {"x": 0, "y": 10, "w": 6, "h": 2, "tag": "service"},
-    5: {"x": 6, "y": 10, "w": 6, "h": 2, "tag": "service"},
+    0: {"x": 0, "y": 0, "w": 7, "h": 4, "tag": "day"},
+    1: {"x": 7, "y": 0, "w": 5, "h": 4, "tag": "day"},
+    2: {"x": 0, "y": 4, "w": 4, "h": 4, "tag": "service"},
+    3: {"x": 4, "y": 4, "w": 8, "h": 4, "tag": "night"},
+    4: {"x": 0, "y": 8, "w": 6, "h": 4, "tag": "night"},
+    5: {"x": 6, "y": 8, "w": 6, "h": 4, "tag": "service"},
 }
 
 ZONE_NEIGHBORS: Dict[int, List[int]] = {
     0: [1, 2, 3],
     1: [0, 3],
     2: [0, 3, 4],
-    3: [0, 1, 2, 5],
-    4: [2, 5],
+    3: [0, 1, 2, 4, 5],
+    4: [2, 3, 5],
     5: [3, 4],
 }
 
@@ -48,13 +49,14 @@ MODE_WEIGHTS = {
         "living_dominance": 4,
         "kitchen_living": 16,
         "kitchen_isolation_malus": -24,
-        "connected_bedrooms": 10,
-        "bedroom_cluster": 8,
-        "isolated_bedrooms": -14,
+        "independent_bedrooms": 18,
+        "bedroom_cluster": 4,
+        "isolated_bedrooms": -18,
         "bathroom_bedroom": 9,
         "wc_day_service": 4,
-        "circulation": 12,
+        "circulation": 14,
         "diversity": 8,
+        "hall_bonus": 10,
     },
     "strict_connectivity": {
         "fill": 12,
@@ -64,13 +66,14 @@ MODE_WEIGHTS = {
         "living_dominance": 4,
         "kitchen_living": 26,
         "kitchen_isolation_malus": -40,
-        "connected_bedrooms": 12,
-        "bedroom_cluster": 10,
-        "isolated_bedrooms": -20,
+        "independent_bedrooms": 22,
+        "bedroom_cluster": 3,
+        "isolated_bedrooms": -24,
         "bathroom_bedroom": 10,
         "wc_day_service": 4,
-        "circulation": 16,
+        "circulation": 18,
         "diversity": 7,
+        "hall_bonus": 14,
     },
     "zoning_first": {
         "fill": 13,
@@ -80,13 +83,14 @@ MODE_WEIGHTS = {
         "living_dominance": 5,
         "kitchen_living": 12,
         "kitchen_isolation_malus": -20,
-        "connected_bedrooms": 8,
-        "bedroom_cluster": 7,
-        "isolated_bedrooms": -12,
+        "independent_bedrooms": 18,
+        "bedroom_cluster": 3,
+        "isolated_bedrooms": -18,
         "bathroom_bedroom": 11,
         "wc_day_service": 5,
-        "circulation": 10,
+        "circulation": 14,
         "diversity": 7,
+        "hall_bonus": 12,
     },
 }
 
@@ -191,8 +195,9 @@ class FloorplanGeneratorV5:
         model.Add(total_area >= 108)
 
         model.Add(area["living"] >= area["kitchen"] + 6)
+        model.Add(area["living"] >= area["hall"] + 10)
         for bedroom in ["bedroom_1", "bedroom_2", "bedroom_3"]:
-            model.Add(area["living"] >= area[bedroom] + 4)
+            model.Add(area["living"] >= area[bedroom] + 2)
 
         zoning_hits_terms: List[cp_model.BoolVar] = []
         for spec in ROOMS:
@@ -279,43 +284,47 @@ class FloorplanGeneratorV5:
         kitchen_connected_to_living = model.NewBoolVar("kitchen_connected_to_living")
         model.AddMaxEquality(kitchen_connected_to_living, [kitchen_living_adj, kitchen_living_prox])
 
+        hall_living_adj = pair_var(adjacency, "hall", "living")
+        hall_connected_to_living = model.NewBoolVar("hall_connected_to_living")
+        model.AddMaxEquality(hall_connected_to_living, [hall_living_adj, pair_var(proximity, "hall", "living")])
+
         kitchen_isolated = model.NewIntVar(0, 1, "kitchen_isolated")
         model.Add(kitchen_isolated == 1 - kitchen_connected_to_living)
 
         if mode == "strict_connectivity":
             model.Add(kitchen_connected_to_living == 1)
+            model.Add(hall_connected_to_living == 1)
 
         bedroom_names = ["bedroom_1", "bedroom_2", "bedroom_3"]
-        bedroom_connected_to_other: Dict[str, cp_model.BoolVar] = {}
+        independent_bedroom_vars: Dict[str, cp_model.BoolVar] = {}
         isolated_bedroom_vars: Dict[str, cp_model.IntVar] = {}
 
         for bedroom in bedroom_names:
-            adj_to_other_terms = [pair_var(adjacency, bedroom, other) for other in bedroom_names if other != bedroom]
-            connected_other = model.NewBoolVar(f"{bedroom}_connected_to_bedroom")
-            model.AddMaxEquality(connected_other, adj_to_other_terms)
-            bedroom_connected_to_other[bedroom] = connected_other
-
-            connected_living = pair_var(adjacency, bedroom, "living")
-            not_isolated = model.NewBoolVar(f"{bedroom}_not_isolated")
-            model.AddMaxEquality(not_isolated, [connected_other, connected_living])
+            access_living = pair_var(adjacency, bedroom, "living")
+            access_hall = pair_var(adjacency, bedroom, "hall")
+            independent_access = model.NewBoolVar(f"{bedroom}_independent_access")
+            model.AddMaxEquality(independent_access, [access_living, access_hall])
+            independent_bedroom_vars[bedroom] = independent_access
 
             isolated = model.NewIntVar(0, 1, f"{bedroom}_isolated")
-            model.Add(isolated == 1 - not_isolated)
+            model.Add(isolated == 1 - independent_access)
             isolated_bedroom_vars[bedroom] = isolated
 
-        connected_bedrooms = model.NewIntVar(0, len(bedroom_names), "connected_bedrooms")
-        model.Add(connected_bedrooms == sum(bedroom_connected_to_other.values()))
+            if mode == "strict_connectivity":
+                model.Add(independent_access == 1)
+
+        independent_bedrooms = model.NewIntVar(0, len(bedroom_names), "independent_bedrooms")
+        model.Add(independent_bedrooms == sum(independent_bedroom_vars.values()))
 
         isolated_bedrooms = model.NewIntVar(0, len(bedroom_names), "isolated_bedrooms")
         model.Add(isolated_bedrooms == sum(isolated_bedroom_vars.values()))
 
-        pairwise_bedroom_adjacency = []
-        for i, a in enumerate(bedroom_names):
-            for b in bedroom_names[i + 1 :]:
-                pairwise_bedroom_adjacency.append(pair_var(adjacency, a, b))
+        bedroom_hall_adjacency = []
+        for bedroom in bedroom_names:
+            bedroom_hall_adjacency.append(pair_var(adjacency, bedroom, "hall"))
 
-        bedroom_cluster_score = model.NewIntVar(0, len(pairwise_bedroom_adjacency), "bedroom_cluster_score")
-        model.Add(bedroom_cluster_score == sum(pairwise_bedroom_adjacency))
+        bedroom_cluster_score = model.NewIntVar(0, len(bedroom_hall_adjacency), "bedroom_cluster_score")
+        model.Add(bedroom_cluster_score == sum(bedroom_hall_adjacency))
 
         bathroom_near_bedrooms_terms = [pair_var(adjacency, "bathroom", b) for b in bedroom_names]
         bathroom_near_bedrooms = model.NewIntVar(0, len(bedroom_names), "bathroom_near_bedrooms")
@@ -327,9 +336,9 @@ class FloorplanGeneratorV5:
         model.AddBoolAnd([b.Not() for b in wc_day_service_terms]).OnlyEnforceIf(wc_day_service_hit.Not())
 
         circulation_terms = []
-        hubs = ["kitchen", "bathroom", "bedroom_1", "bedroom_2", "bedroom_3"]
+        hubs = ["living", "hall"]
         for spec in ROOMS:
-            if spec.name == "living" or not spec.important_for_circulation:
+            if spec.name in {"living", "hall"} or not spec.important_for_circulation:
                 continue
 
             direct = pair_var(adjacency, spec.name, "living")
@@ -346,18 +355,19 @@ class FloorplanGeneratorV5:
             model.AddMaxEquality(access, one_hop_candidates)
             circulation_terms.append(access)
 
-        circulation_access = model.NewIntVar(0, len(circulation_terms), "circulation_access")
-        model.Add(circulation_access == sum(circulation_terms))
+        circulation_access = model.NewIntVar(0, len(circulation_terms) + 1, "circulation_access")
+        model.Add(circulation_access == sum(circulation_terms) + hall_connected_to_living)
 
-        connectivity_score = model.NewIntVar(0, 200, "connectivity_score")
+        connectivity_score = model.NewIntVar(0, 300, "connectivity_score")
         model.Add(
             connectivity_score
             == 12 * kitchen_connected_to_living
-            + 4 * connected_bedrooms
-            + 5 * bedroom_cluster_score
+            + 8 * hall_connected_to_living
+            + 8 * independent_bedrooms
+            + 3 * bedroom_cluster_score
             + 4 * bathroom_near_bedrooms
             + 6 * circulation_access
-            - 8 * isolated_bedrooms
+            - 10 * isolated_bedrooms
         )
 
         overcrowding_terms = []
@@ -396,9 +406,10 @@ class FloorplanGeneratorV5:
             + weights["compactness"] * compactness_score
             + weights["zoning"] * zoning_score
             + weights["living_dominance"] * area["living"]
+            + weights["hall_bonus"] * hall_connected_to_living
             + weights["kitchen_living"] * kitchen_living_adj
             + weights["kitchen_isolation_malus"] * kitchen_isolated
-            + weights["connected_bedrooms"] * connected_bedrooms
+            + weights["independent_bedrooms"] * independent_bedrooms
             + weights["bedroom_cluster"] * bedroom_cluster_score
             + weights["isolated_bedrooms"] * isolated_bedrooms
             + weights["bathroom_bedroom"] * bathroom_near_bedrooms
@@ -457,7 +468,8 @@ class FloorplanGeneratorV5:
             "occupied_area": solver.Value(total_area),
             "empty_area": solver.Value(empty_area),
             "isolated_bedrooms": solver.Value(isolated_bedrooms),
-            "connected_bedrooms": solver.Value(connected_bedrooms),
+            "independent_bedrooms": solver.Value(independent_bedrooms),
+            "hall_connected_to_living": solver.Value(hall_connected_to_living),
             "kitchen_connected_to_living": solver.Value(kitchen_connected_to_living),
             "bathroom_near_bedrooms": solver.Value(bathroom_near_bedrooms),
             "connectivity_score": solver.Value(connectivity_score),
@@ -492,6 +504,7 @@ class FloorplanGeneratorV5:
         colors = {
             "living": "#fca5a5",
             "kitchen": "#fdba74",
+            "hall": "#e9d5ff",
             "bedroom_1": "#86efac",
             "bedroom_2": "#4ade80",
             "bedroom_3": "#22c55e",
