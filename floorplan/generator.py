@@ -195,8 +195,8 @@ class FloorplanGeneratorV5:
         model.Add(total_area == sum(area.values()))
         empty_area = model.NewIntVar(0, building_area, "empty_area")
         model.Add(empty_area == building_area - total_area)
-        model.Add(empty_area <= 8)
-        model.Add(total_area >= building_area - 8)
+        model.Add(empty_area <= 12)
+        model.Add(total_area >= building_area - 12)
 
         model.Add(area["living"] >= area["kitchen"] + 6)
         model.Add(area["living"] >= area["hall"] + 8)
